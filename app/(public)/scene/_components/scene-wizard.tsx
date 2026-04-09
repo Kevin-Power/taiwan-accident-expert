@@ -5,7 +5,9 @@ import type { RoadType, Weather, VehicleType } from '@/lib/rules-engine/types';
 import { StepSafety } from './step-safety';
 import { StepInjury } from './step-injury';
 import { StepVehicleMove } from './step-vehicle-move';
-import { Button } from '@/components/ui/button';
+import { StepEvidence } from './step-evidence';
+import { StepInfoExchange } from './step-info-exchange';
+import { StepComplete } from './step-complete';
 
 export interface SceneData {
   // Step 1: Safety
@@ -64,13 +66,13 @@ export function SceneWizard() {
       return <StepInjury data={data} updateData={updateData} onNext={next} onBack={back} />;
     case 3:
       return <StepVehicleMove data={data} updateData={updateData} onNext={next} onBack={back} />;
+    case 4:
+      return <StepEvidence data={data} updateData={updateData} onNext={next} onBack={back} />;
+    case 5:
+      return <StepInfoExchange data={data} updateData={updateData} onNext={next} onBack={back} />;
+    case 6:
+      return <StepComplete data={data} />;
     default:
-      // Steps 4-6 will be added in Task 13
-      return (
-        <div className="p-8 text-center">
-          <p className="text-lg">步驟 {step} 開發中...</p>
-          <Button variant="outline" onClick={back} className="mt-4">返回上一步</Button>
-        </div>
-      );
+      return null;
   }
 }
