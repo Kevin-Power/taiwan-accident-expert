@@ -70,16 +70,16 @@ export function StepSafety({ data, updateData, onNext }: StepSafetyProps) {
     >
       <div className="space-y-6">
         {/* Safety checklist */}
-        <Card>
+        <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4">
-            <h2 className="font-semibold text-base mb-3">立即執行安全措施</h2>
+            <h2 className="font-semibold text-xl mb-3">立即執行安全措施</h2>
             <ul className="space-y-3">
               {SAFETY_CHECKLIST.map(item => (
                 <li key={item.id} className="flex items-start gap-3">
-                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
+                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-sm font-bold">
                     ✓
                   </span>
-                  <span className="text-sm">{item.label}</span>
+                  <span className="text-base">{item.label}</span>
                 </li>
               ))}
             </ul>
@@ -87,15 +87,15 @@ export function StepSafety({ data, updateData, onNext }: StepSafetyProps) {
         </Card>
 
         {/* Road conditions */}
-        <Card>
+        <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4">
-            <h2 className="font-semibold text-base mb-4">道路環境</h2>
+            <h2 className="font-semibold text-xl mb-4">道路環境</h2>
             <div className="space-y-4">
               {/* Road type */}
               <div className="space-y-1.5">
                 <Label>道路類型</Label>
                 <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="flex h-12 text-base w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={data.roadType ?? ''}
                   onChange={(e) => updateData({ roadType: e.target.value as RoadType })}
                 >
@@ -110,7 +110,7 @@ export function StepSafety({ data, updateData, onNext }: StepSafetyProps) {
               <div className="space-y-1.5">
                 <Label>速限</Label>
                 <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="flex h-12 text-base w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={data.speedLimit ?? ''}
                   onChange={(e) => updateData({ speedLimit: Number(e.target.value) })}
                 >
@@ -125,7 +125,7 @@ export function StepSafety({ data, updateData, onNext }: StepSafetyProps) {
               <div className="space-y-1.5">
                 <Label>天氣狀況</Label>
                 <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  className="flex h-12 text-base w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   value={data.weather ?? ''}
                   onChange={(e) => updateData({ weather: e.target.value as Weather })}
                 >
@@ -143,8 +143,8 @@ export function StepSafety({ data, updateData, onNext }: StepSafetyProps) {
         {warningResult && (
           <div className="space-y-3">
             <Alert className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-              <AlertDescription className="text-amber-800 dark:text-amber-200 font-medium">
-                請在車後方 <span className="text-xl font-bold">{warningResult.decision}</span> 公尺處放置警告標誌
+              <AlertDescription className="text-amber-800 dark:text-amber-200 font-bold">
+                請在車後方 <span className="text-4xl font-bold">{warningResult.decision}</span> 公尺處放置警告標誌
               </AlertDescription>
             </Alert>
 

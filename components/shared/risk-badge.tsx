@@ -16,10 +16,10 @@ const riskConfig: Record<string, { label: string; className: string }> = {
 
 export function SeverityBadge({ severity }: { severity: Severity }) {
   const config = severityConfig[severity];
-  return <Badge className={config.className}>{config.label}</Badge>;
+  return <Badge className={`text-sm font-semibold ${config.className}`}>{config.label}</Badge>;
 }
 
 export function RiskBadge({ level }: { level: string }) {
   const config = riskConfig[level] || riskConfig.low;
-  return <Badge variant="outline" className={config.className}>{config.label}</Badge>;
+  return <Badge variant="outline" className={`text-sm ${config.className}`}>{config.label}</Badge>;
 }

@@ -27,7 +27,7 @@ export function CountdownBadge({ daysRemaining, label }: CountdownBadgeProps) {
   }
 
   return (
-    <Badge variant="outline" className={className}>
+    <Badge variant="outline" className={`text-sm font-medium ${className}`}>
       {label ? `${label}：${text}` : text}
     </Badge>
   );

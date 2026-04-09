@@ -65,19 +65,19 @@ export function StepEvidence({ data, updateData, onNext, onBack }: StepEvidenceP
     >
       <div className="space-y-6">
         {/* Condition toggles */}
-        <Card>
+        <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4">
-            <h2 className="font-semibold text-base mb-3">現場條件</h2>
+            <h2 className="font-semibold text-xl mb-3">現場條件</h2>
             <div className="space-y-2">
               {CONDITION_TOGGLES.map(item => (
-                <label key={item.key} className="flex items-center gap-3 cursor-pointer">
+                <label key={item.key} className="flex items-center gap-3 cursor-pointer py-1">
                   <input
                     type="checkbox"
                     checked={data[item.key]}
                     onChange={e => updateData({ [item.key]: e.target.checked })}
                     className="h-4 w-4 rounded border-input"
                   />
-                  <span className="text-sm">{item.label}</span>
+                  <span className="text-base">{item.label}</span>
                 </label>
               ))}
             </div>
@@ -86,7 +86,7 @@ export function StepEvidence({ data, updateData, onNext, onBack }: StepEvidenceP
 
         {/* Checklist items */}
         <div className="space-y-3">
-          <h2 className="font-semibold text-base">蒐證清單</h2>
+          <h2 className="font-semibold text-2xl font-bold">蒐證清單</h2>
           {checklist.items.map(item => (
             <button
               key={item.category}
@@ -108,12 +108,12 @@ export function StepEvidence({ data, updateData, onNext, onBack }: StepEvidenceP
                 </span>
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-medium">{item.description}</span>
+                    <span className="text-base font-medium">{item.description}</span>
                     {item.required && (
                       <span className="text-xs rounded-full bg-red-100 text-red-700 px-2 py-0.5 font-medium">必拍</span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">{item.tips}</p>
+                  <p className="text-sm text-muted-foreground">{item.tips}</p>
                 </div>
               </div>
             </button>
@@ -125,7 +125,7 @@ export function StepEvidence({ data, updateData, onNext, onBack }: StepEvidenceP
           <div className="space-y-2">
             {checklist.warnings.map((w, i) => (
               <Alert key={i} className="border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-                <AlertDescription className="text-amber-800 dark:text-amber-200 text-sm">{w}</AlertDescription>
+                <AlertDescription className="text-amber-800 dark:text-amber-200 text-base">{w}</AlertDescription>
               </Alert>
             ))}
           </div>

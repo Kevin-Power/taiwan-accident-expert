@@ -69,11 +69,11 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
       <div className="space-y-6">
         {/* Three big severity buttons */}
         <div className="space-y-3">
-          <h2 className="font-semibold text-base">事故傷亡情況</h2>
+          <h2 className="text-2xl font-bold">事故傷亡情況</h2>
           <button
             type="button"
             onClick={() => selectSeverity('fatal')}
-            className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
+            className={`w-full rounded-xl border-2 p-5 min-h-[72px] text-left transition-all ${
               severityChoice === 'fatal'
                 ? 'border-red-500 bg-red-50 dark:bg-red-950/30'
                 : 'border-muted hover:border-red-300'
@@ -82,8 +82,8 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
             <div className="flex items-center gap-3">
               <span className="text-2xl">🔴</span>
               <div>
-                <p className="font-bold text-red-700 dark:text-red-400">有人死亡（A1）</p>
-                <p className="text-sm text-muted-foreground">事故造成人員死亡</p>
+                <p className="font-bold text-base text-red-700 dark:text-red-400">有人死亡（A1）</p>
+                <p className="text-base text-muted-foreground">事故造成人員死亡</p>
               </div>
             </div>
           </button>
@@ -91,7 +91,7 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
           <button
             type="button"
             onClick={() => selectSeverity('injury')}
-            className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
+            className={`w-full rounded-xl border-2 p-5 min-h-[72px] text-left transition-all ${
               severityChoice === 'injury'
                 ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950/30'
                 : 'border-muted hover:border-yellow-300'
@@ -100,8 +100,8 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
             <div className="flex items-center gap-3">
               <span className="text-2xl">🟡</span>
               <div>
-                <p className="font-bold text-yellow-700 dark:text-yellow-400">有人受傷（A2）</p>
-                <p className="text-sm text-muted-foreground">事故造成人員受傷</p>
+                <p className="font-bold text-base text-yellow-700 dark:text-yellow-400">有人受傷（A2）</p>
+                <p className="text-base text-muted-foreground">事故造成人員受傷</p>
               </div>
             </div>
           </button>
@@ -109,7 +109,7 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
           <button
             type="button"
             onClick={() => selectSeverity('none')}
-            className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
+            className={`w-full rounded-xl border-2 p-5 min-h-[72px] text-left transition-all ${
               severityChoice === 'none'
                 ? 'border-green-500 bg-green-50 dark:bg-green-950/30'
                 : 'border-muted hover:border-green-300'
@@ -118,17 +118,17 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
             <div className="flex items-center gap-3">
               <span className="text-2xl">🟢</span>
               <div>
-                <p className="font-bold text-green-700 dark:text-green-400">無人傷亡（A3）</p>
-                <p className="text-sm text-muted-foreground">僅財物損失</p>
+                <p className="font-bold text-base text-green-700 dark:text-green-400">無人傷亡（A3）</p>
+                <p className="text-base text-muted-foreground">僅財物損失</p>
               </div>
             </div>
           </button>
         </div>
 
         {/* Additional risk flags */}
-        <Card>
+        <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4">
-            <h3 className="font-semibold text-sm mb-3">其他風險因素（選填）</h3>
+            <h3 className="font-semibold text-base mb-3">其他風險因素（選填）</h3>
             <div className="space-y-2">
               {[
                 { key: 'hasFire' as const, label: '現場起火' },
@@ -143,7 +143,7 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
                     onChange={e => updateData({ [item.key]: e.target.checked })}
                     className="h-4 w-4 rounded border-input"
                   />
-                  <span className="text-sm">{item.label}</span>
+                  <span className="text-base">{item.label}</span>
                 </label>
               ))}
             </div>
@@ -152,7 +152,7 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
 
         {/* Triage result */}
         <div className={`rounded-xl border-2 p-4 space-y-3 ${alertColorClass}`}>
-          <p className="font-semibold text-sm">{triageResult.explanation}</p>
+          <p className="font-semibold text-base">{triageResult.explanation}</p>
 
           {/* Emergency call buttons */}
           {(data.hasDeaths || data.hasInjuries || data.hasFire || data.hasHazmat) && (

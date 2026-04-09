@@ -28,7 +28,7 @@ function YesNoButtons({ value, onChange, yesLabel = '是', noLabel = '否' }: Ye
       <button
         type="button"
         onClick={() => onChange(true)}
-        className={`flex-1 rounded-lg border-2 py-2 text-sm font-medium transition-all ${
+        className={`flex-1 rounded-lg border-2 h-12 text-base font-medium transition-all ${
           value
             ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-400'
             : 'border-muted text-muted-foreground hover:border-green-300'
@@ -39,7 +39,7 @@ function YesNoButtons({ value, onChange, yesLabel = '是', noLabel = '否' }: Ye
       <button
         type="button"
         onClick={() => onChange(false)}
-        className={`flex-1 rounded-lg border-2 py-2 text-sm font-medium transition-all ${
+        className={`flex-1 rounded-lg border-2 h-12 text-base font-medium transition-all ${
           !value
             ? 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400'
             : 'border-muted text-muted-foreground hover:border-red-300'
@@ -94,12 +94,12 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
     >
       <div className="space-y-6">
         {/* Quick questions */}
-        <Card>
+        <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4 space-y-5">
-            <h2 className="font-semibold text-base">車輛狀況</h2>
+            <h2 className="text-2xl font-bold">車輛狀況</h2>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">車輛可以自行行駛？</p>
+              <p className="text-base font-medium">車輛可以自行行駛？</p>
               <YesNoButtons
                 value={data.vehicleCanDrive}
                 onChange={val => updateData({ vehicleCanDrive: val })}
@@ -107,7 +107,7 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">雙方同意移車？</p>
+              <p className="text-base font-medium">雙方同意移車？</p>
               <YesNoButtons
                 value={data.bothPartiesAgreeToMove}
                 onChange={val => updateData({ bothPartiesAgreeToMove: val })}
@@ -115,7 +115,7 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">雙方有爭議？</p>
+              <p className="text-base font-medium">雙方有爭議？</p>
               <YesNoButtons
                 value={data.hasDispute}
                 onChange={val => updateData({ hasDispute: val })}
@@ -129,8 +129,8 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
         {/* Decision result */}
         <div className={`rounded-xl border-2 p-4 space-y-3 ${config.colorClass}`}>
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold">{config.label}</span>
-            <span className="text-sm text-muted-foreground">— {moveResult.explanation}</span>
+            <span className="text-xl font-bold">{config.label}</span>
+            <span className="text-base text-muted-foreground">— {moveResult.explanation}</span>
           </div>
 
           {moveResult.warnings.map((w, i) => (
@@ -142,12 +142,12 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
 
         {/* Step-by-step instructions */}
         {moveResult.nextSteps.length > 0 && (
-          <Card>
+          <Card className="shadow-sm rounded-xl">
             <CardContent className="pt-4">
-              <h3 className="font-semibold text-sm mb-3">處理步驟</h3>
+              <h3 className="font-semibold text-base mb-3">處理步驟</h3>
               <ol className="space-y-2">
                 {moveResult.nextSteps.map((step, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm">
+                  <li key={i} className="flex items-start gap-3 text-base">
                     <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
                       {i + 1}
                     </span>

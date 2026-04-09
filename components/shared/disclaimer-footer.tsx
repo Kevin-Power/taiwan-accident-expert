@@ -2,7 +2,7 @@ import { LEGAL_DISCLAIMER } from '@/lib/rules-engine/constants';
 
 export function DisclaimerFooter() {
   return (
-    <div className="border-t bg-muted/50 px-4 py-3 text-xs text-muted-foreground">
+    <div className="border-t bg-muted/50 px-5 py-4 text-sm text-muted-foreground">
       <p>{LEGAL_DISCLAIMER.text}</p>
       <p className="mt-1">
         法律扶助基金會：

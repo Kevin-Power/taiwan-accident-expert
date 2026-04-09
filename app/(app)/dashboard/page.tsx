@@ -4,6 +4,8 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { CaseCard } from './_components/case-card';
 import { differenceInDays } from 'date-fns';
 
+export const dynamic = 'force-dynamic';
+
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
 

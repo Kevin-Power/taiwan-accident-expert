@@ -15,14 +15,14 @@ export function LawReferenceBadge({ reference }: LawReferenceBadgeProps) {
     <span className="inline-block">
       <Badge
         variant="outline"
-        className="cursor-pointer text-xs hover:bg-accent"
+        className="cursor-pointer text-sm hover:bg-accent"
         onClick={() => setExpanded(!expanded)}
       >
         {reference.law} {reference.article}
         {reference.clause ? ` ${reference.clause}` : ''}
       </Badge>
       {expanded && (
-        <span className="block mt-1 text-xs text-muted-foreground bg-muted rounded p-2">
+        <span className="block mt-1 text-sm text-muted-foreground bg-muted rounded p-3">
           {reference.summary}
         </span>
       )}
