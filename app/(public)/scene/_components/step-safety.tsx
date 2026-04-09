@@ -6,13 +6,7 @@ import { LawReferenceBadge } from '@/components/shared/law-reference-badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select';
+// Using native <select> for reliable label display with base-ui
 import { calculateWarningDistance } from '@/lib/rules-engine/warning-distance';
 import type { RoadType, Weather } from '@/lib/rules-engine/types';
 import type { SceneData } from './scene-wizard';
@@ -100,61 +94,46 @@ export function StepSafety({ data, updateData, onNext }: StepSafetyProps) {
               {/* Road type */}
               <div className="space-y-1.5">
                 <Label>道路類型</Label>
-                <Select
-                  value={data.roadType ?? null}
-                  onValueChange={(val) => updateData({ roadType: val as RoadType })}
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  value={data.roadType ?? ''}
+                  onChange={(e) => updateData({ roadType: e.target.value as RoadType })}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="請選擇道路類型" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ROAD_TYPE_OPTIONS.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <option value="" disabled>請選擇道路類型</option>
+                  {ROAD_TYPE_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Speed limit */}
               <div className="space-y-1.5">
                 <Label>速限</Label>
-                <Select
-                  value={data.speedLimit ?? null}
-                  onValueChange={(val) => updateData({ speedLimit: Number(val) })}
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  value={data.speedLimit ?? ''}
+                  onChange={(e) => updateData({ speedLimit: Number(e.target.value) })}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="請選擇速限" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SPEED_LIMIT_OPTIONS.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <option value="" disabled>請選擇速限</option>
+                  {SPEED_LIMIT_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Weather */}
               <div className="space-y-1.5">
                 <Label>天氣狀況</Label>
-                <Select
-                  value={data.weather ?? null}
-                  onValueChange={(val) => updateData({ weather: val as Weather })}
+                <select
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  value={data.weather ?? ''}
+                  onChange={(e) => updateData({ weather: e.target.value as Weather })}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="請選擇天氣" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {WEATHER_OPTIONS.map(opt => (
-                      <SelectItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <option value="" disabled>請選擇天氣</option>
+                  {WEATHER_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
               </div>
             </div>
           </CardContent>

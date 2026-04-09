@@ -3,8 +3,15 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { DisclaimerFooter } from '@/components/shared/disclaimer-footer';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createServerSupabaseClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  let user = null;
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // Supabase not configured — skip auth check for local dev
+  }
 
   if (!user) {
     redirect('/');
