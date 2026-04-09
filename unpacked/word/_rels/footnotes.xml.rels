@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId27" Target="https://data.gov.tw/dataset/13139" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId50" Target="https://data.gov.tw/m2m" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId47" Target="https://esystem.tcpd.gov.tw/?utm_source=chatgpt.com" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId23" Target="https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=I0020003" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId68" Target="https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=I0050021" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId37" Target="https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=K0040045" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId21" Target="https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=D0080090" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId29" Target="https://law.moj.gov.tw/LawClass/LawOldVer.aspx?pcode=I0050021" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId26" Target="https://law.moj.gov.tw/LawClass/LawSingle.aspx?flno=14&amp;pcode=G0390060" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId45" Target="https://law.moj.gov.tw/LawClass/LawSingle.aspx?flno=184&amp;pcode=B0000001" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId46" Target="https://law.moj.gov.tw/LawClass/LawSingle.aspx?flno=284&amp;pcode=C0000001" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId36" Target="https://law.moj.gov.tw/LawClass/LawSingle.aspx?flno=3&amp;pcode=K0040012" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId33" Target="https://law.moj.gov.tw/LawClass/LawSingle.aspx?flno=62&amp;pcode=K0040012" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId49" Target="https://law.moj.gov.tw/api/swagger" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId51" Target="https://roadsafety.tw/?utm_source=chatgpt.com" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId40" Target="https://tm2.npa.gov.tw/NM105-505ClientRWD2/TM01A01Q_01.jsp?utm_source=chatgpt.com" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId35" Target="https://www.gov.tw/News_Content_26_849758" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId30" Target="https://www.mvacf.org.tw/" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId22" Target="https://www.mvdis.gov.tw/files/m3/vil/cac/cacApply.pdf" TargetMode="External"/>
+  <Relationship Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Id="rId38" Target="https://www.npa.gov.tw/ch/app/faq/view?id=2144&amp;module=faq&amp;serno=A1084129" TargetMode="External"/>
+</Relationships>
