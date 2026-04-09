@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Case {
+  id                String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String     @map("user_id") @db.Uuid
+  status            String     @default("on_scene")
+  severity          String     @default("A3_property_only")
+  riskFlags         Json       @default("{}") @map("risk_flags")
+  accidentDate      DateTime   @map("accident_date") @db.Timestamptz()
+  locationText      String?    @map("location_text")
+  locationLat       Float?     @map("location_lat")
+  locationLng       Float?     @map("location_lng")
+  roadType          String?    @map("road_type")
+  speedLimit        Int?       @map("speed_limit")
+  weather           String?
+  parties           Json       @default("[]")
+  witnesses         Json       @default("[]")
+  triageResult      Json?      @map("triage_result")
+  canMoveVehicle    Boolean?   @map("can_move_vehicle")
+  moveVehicleReason String?    @map("move_vehicle_reason")
+  policeArrived     Boolean    @default(false) @map("police_arrived")
+  policeReportNo    String?    @map("police_report_no")
+  createdAt         DateTime   @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt         DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz()
+
+  evidence   Evidence[]
+  reminders  Reminder[]
+  documents  Document[]
+  auditLogs  AuditLog[]
+
+  @@index([userId])
+  @@index([status])
+  @@map("cases")
+}
+
+model Evidence {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  caseId           String   @map("case_id") @db.Uuid
+  type             String
+  category         String?
+  filePath         String   @map("file_path")
+  fileHash         String   @map("file_hash")
+  originalFilename String?  @map("original_filename")
+  fileSize         BigInt?  @map("file_size")
+  mimeType         String?  @map("mime_type")
+  metadata         Json     @default("{}")
+  notes            String?
+  version          Int      @default(1)
+  uploadedAt       DateTime @default(now()) @map("uploaded_at") @db.Timestamptz()
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+  @@map("evidence")
+}
+
+model Reminder {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  caseId      String    @map("case_id") @db.Uuid
+  type        String
+  dueDate     DateTime  @map("due_date") @db.Timestamptz()
+  status      String    @default("pending")
+  lawReference String?  @map("law_reference")
+  description String?
+  notifiedAt  DateTime? @map("notified_at") @db.Timestamptz()
+  completedAt DateTime? @map("completed_at") @db.Timestamptz()
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz()
+
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+  @@index([dueDate])
+  @@map("reminders")
+}
+
+model Document {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  caseId      String   @map("case_id") @db.Uuid
+  type        String
+  content     Json
+  filePath    String?  @map("file_path")
+  version     Int      @default(1)
+  generatedAt DateTime @default(now()) @map("generated_at") @db.Timestamptz()
+
+  case Case @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId])
+  @@map("documents")
+}
+
+model AuditLog {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  caseId    String?  @map("case_id") @db.Uuid
+  action    String
+  detail    Json     @default("{}")
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  case Case? @relation(fields: [caseId], references: [id])
+
+  @@index([caseId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
