@@ -9,6 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { triageAccident } from '@/lib/rules-engine/triage';
 import { calculateDeadlines } from '@/lib/rules-engine/deadlines';
+import { findMatchingScenarios } from '@/lib/rules-engine/scenarios';
+import { DOCUMENT_TEMPLATES } from '@/lib/templates/all-templates';
+import { ScenarioGuidanceCard } from '@/components/shared/scenario-guidance-card';
 import type { SceneData } from './scene-wizard';
 
 interface StepCompleteProps {
@@ -38,6 +41,21 @@ export function StepComplete({ data }: StepCompleteProps) {
     });
   }, [triageResult.severity]);
 
+  const matchedScenarios = useMemo(() => findMatchingScenarios({
+    severity: triageResult.severity,
+    roadType: data.roadType,
+    hasInjuries: data.hasInjuries,
+    hasDeaths: data.hasDeaths,
+    vehicleCanDrive: data.vehicleCanDrive,
+    suspectedHitAndRun: data.suspectedHitAndRun,
+    suspectedDUI: data.suspectedDUI,
+    hasDispute: data.hasDispute,
+    vehicleTypes: data.vehicleTypes,
+  }), [triageResult.severity, data]);
+
+  // Filter to P0 + P1 templates
+  const availableDocuments = DOCUMENT_TEMPLATES.filter(t => t.priority === 'P0' || t.priority === 'P1');
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
@@ -59,6 +77,20 @@ export function StepComplete({ data }: StepCompleteProps) {
           </CardContent>
         </Card>
 
+        {/* Matched scenarios section */}
+        {matchedScenarios.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              <span>🎯</span>
+              <span>適用情境指引</span>
+              <span className="text-base font-normal text-muted-foreground">（共 {matchedScenarios.length} 項）</span>
+            </h3>
+            {matchedScenarios.map((scenario) => (
+              <ScenarioGuidanceCard key={scenario.id} scenario={scenario} />
+            ))}
+          </div>
+        )}
+
         {/* Deadlines / reminders */}
         {deadlinesResult.reminders.length > 0 && (
           <Card className="shadow-sm rounded-xl">
@@ -75,6 +107,34 @@ export function StepComplete({ data }: StepCompleteProps) {
             </CardContent>
           </Card>
         )}
+
+        {/* Available documents section */}
+        <Card className="shadow-sm rounded-xl">
+          <CardContent className="p-5 space-y-3">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <span>📄</span>
+              <span>可生成的文件</span>
+              <span className="text-base font-normal text-muted-foreground">（{availableDocuments.length} 種）</span>
+            </h3>
+            <p className="text-base text-muted-foreground">完成註冊後，系統可協助你生成以下文件：</p>
+            <div className="space-y-2">
+              {availableDocuments.map((doc) => (
+                <div key={doc.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+                  <span className="shrink-0 inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-xs font-bold text-blue-700 dark:text-blue-300">
+                    {doc.priority}
+                  </span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base font-semibold">{doc.name}</span>
+                      <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">{doc.category}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-0.5">{doc.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Legal escalation alert */}
         {triageResult.escalateToHuman && (

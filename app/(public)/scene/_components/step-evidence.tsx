@@ -6,6 +6,7 @@ import { LawReferenceBadge } from '@/components/shared/law-reference-badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { generateEvidenceChecklist } from '@/lib/rules-engine/evidence-checklist';
+import { findMatchingScenarios } from '@/lib/rules-engine/scenarios';
 import type { SceneData } from './scene-wizard';
 
 interface StepEvidenceProps {
@@ -38,6 +39,23 @@ export function StepEvidence({ data, updateData, onNext, onBack }: StepEvidenceP
       hasInjuries: data.hasInjuries,
     });
   }, [data.roadType, data.vehicleTypes, data.hasTrafficSignal, data.hasSurveillance, data.hasDashcam, data.hasSkidMarks, data.weather, data.hasInjuries]);
+
+  const matchedScenarios = useMemo(() => findMatchingScenarios({
+    severity: data.hasDeaths ? 'A1_fatal' : data.hasInjuries ? 'A2_injury' : 'A3_property_only',
+    roadType: data.roadType,
+    hasInjuries: data.hasInjuries,
+    hasDeaths: data.hasDeaths,
+    vehicleCanDrive: data.vehicleCanDrive,
+    suspectedHitAndRun: data.suspectedHitAndRun,
+    suspectedDUI: data.suspectedDUI,
+    hasDispute: data.hasDispute,
+    vehicleTypes: data.vehicleTypes,
+  }), [data]);
+
+  // Collect all unique evidence focus tips from matched scenarios
+  const scenarioEvidenceTips = matchedScenarios.flatMap(s =>
+    s.evidenceFocus.map(e => ({ scenario: s.name, ...e }))
+  );
 
   function toggleChecked(id: string) {
     setChecked(prev => {
@@ -83,6 +101,30 @@ export function StepEvidence({ data, updateData, onNext, onBack }: StepEvidenceP
             </div>
           </CardContent>
         </Card>
+
+        {/* Scenario-specific evidence focus */}
+        {scenarioEvidenceTips.length > 0 && (
+          <Card className="shadow-sm rounded-xl border-l-4 border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/10">
+            <CardContent className="p-5 space-y-3">
+              <h3 className="text-lg font-bold flex items-center gap-2">
+                <span>🎯</span>
+                <span>本案件蒐證重點</span>
+              </h3>
+              <p className="text-base text-muted-foreground">系統依你的事故情況，特別提醒以下蒐證重點：</p>
+              <ul className="space-y-2">
+                {scenarioEvidenceTips.slice(0, 8).map((tip, i) => (
+                  <li key={i} className="flex gap-2 text-base">
+                    <span className="text-amber-600 shrink-0">⚡</span>
+                    <div className="flex-1">
+                      <span className="font-medium">{tip.tip}</span>
+                      <span className="text-sm text-muted-foreground ml-2">（{tip.scenario}）</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Checklist items */}
         <div className="space-y-3">
