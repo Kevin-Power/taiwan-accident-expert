@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { SeverityBadge } from '@/components/shared/risk-badge';
 import { CountdownBadge } from '@/components/shared/countdown-badge';
@@ -14,6 +14,9 @@ import { findMatchingScenarios } from '@/lib/rules-engine/scenarios';
 import { DOCUMENT_TEMPLATES } from '@/lib/templates/all-templates';
 import { isGeneratorAvailable } from '@/lib/templates/generators';
 import { ScenarioGuidanceCard } from '@/components/shared/scenario-guidance-card';
+import { saveCase, isCloudStorageAvailable } from '@/lib/cases/store';
+import { getAnonymousId } from '@/lib/cases/anonymous-id';
+import type { NewCaseInput } from '@/lib/cases/store';
 import type { SceneData } from './scene-wizard';
 
 interface StepCompleteProps {
@@ -58,30 +61,116 @@ export function StepComplete({ data }: StepCompleteProps) {
   // Filter to P0 + P1 templates
   const availableDocuments = DOCUMENT_TEMPLATES.filter(t => t.priority === 'P0' || t.priority === 'P1');
 
-  // Save scene data to sessionStorage so document preview pages can read it
+  // Save state: null=saving, {caseId,backend}=done, {error}=failed
+  const [saveState, setSaveState] = useState<{ caseId: string; backend: 'supabase' | 'local'; error?: string } | null>(null);
+  // Guard against React Strict Mode double-invoke in dev
+  const hasSavedRef = useRef(false);
+
+  // Persist case on mount: writes to Supabase (if configured) or localStorage.
+  // Also keeps a sessionStorage copy for document preview pages to read.
   useEffect(() => {
-    const caseId = `ACC-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(Date.now()).slice(-4)}`;
-    const payload = {
-      ...data,
-      caseId,
-      accidentDate: new Date().toISOString(),
-    };
-    try {
-      sessionStorage.setItem('accident_expert_scene_data', JSON.stringify(payload));
-    } catch {
-      // sessionStorage may fail in private mode — ignore
+    if (hasSavedRef.current) return;
+    hasSavedRef.current = true;
+
+    // Ensure we have an anonymous ID for guest users
+    getAnonymousId();
+
+    let cancelled = false;
+
+    async function persist() {
+      // Build the NewCaseInput payload
+      const newCase: NewCaseInput = {
+        status: 'on_scene',
+        severity: triageResult.severity,
+        riskFlags: {
+          hasFire: data.hasFire,
+          hasHazmat: data.hasHazmat,
+          suspectedDUI: data.suspectedDUI,
+          suspectedHitAndRun: data.suspectedHitAndRun,
+        },
+        accidentDate: new Date().toISOString(),
+        roadType: data.roadType ?? null,
+        speedLimit: data.speedLimit ?? null,
+        weather: data.weather ?? null,
+        parties: [
+          {
+            role: 'other' as const,
+            name: data.otherPartyName,
+            plate: data.otherPartyPlate,
+            phone: data.otherPartyPhone,
+            insurance: data.otherPartyInsurance,
+          },
+        ].filter(p => p.name || p.plate || p.phone || p.insurance),
+        witnesses: data.witnessName || data.witnessPhone
+          ? [{ name: data.witnessName, phone: data.witnessPhone }]
+          : [],
+        vehicleTypes: data.vehicleTypes,
+        hasTrafficSignal: data.hasTrafficSignal,
+        hasSurveillance: data.hasSurveillance,
+        hasDashcam: data.hasDashcam,
+        hasSkidMarks: data.hasSkidMarks,
+        triageResult,
+        canMoveVehicle: !data.hasDeaths && data.vehicleCanDrive && data.bothPartiesAgreeToMove && !data.hasDispute,
+        moveVehicleReason: null,
+        policeArrived: true,
+      };
+
+      const result = await saveCase(newCase);
+      if (cancelled) return;
+      setSaveState(result);
+
+      // Also write to sessionStorage so document preview pages can read
+      const sessionPayload = {
+        ...data,
+        caseId: result.caseId,
+        accidentDate: newCase.accidentDate,
+      };
+      try {
+        sessionStorage.setItem('accident_expert_scene_data', JSON.stringify(sessionPayload));
+      } catch {
+        // private mode — ignore
+      }
     }
-  }, [data]);
+
+    persist();
+    return () => {
+      cancelled = true;
+    };
+  }, [data, triageResult]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
-        {/* Success alert */}
-        <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
-          <AlertDescription className="text-green-800 dark:text-green-200 font-extrabold text-2xl">
-            案件資料已暫存！
-          </AlertDescription>
-        </Alert>
+    <div className="flex flex-col min-h-[100dvh] bg-background">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-lg mx-auto w-full px-5 py-8 space-y-6">
+        {/* Save status alert */}
+        {!saveState ? (
+          <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950/20">
+            <AlertDescription className="text-blue-800 dark:text-blue-200 text-lg font-semibold">
+              儲存中...
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <Alert className="border-green-500 bg-green-50 dark:bg-green-950/20">
+            <AlertDescription className="text-green-800 dark:text-green-200">
+              <div className="font-extrabold text-2xl">案件已建立！</div>
+              <div className="text-base mt-1">
+                案件編號：<span className="font-mono">{saveState.caseId}</span>
+              </div>
+              <div className="text-sm mt-1 opacity-80">
+                {saveState.backend === 'supabase'
+                  ? '☁️ 已儲存至雲端（跨裝置同步）'
+                  : isCloudStorageAvailable()
+                  ? '⚠️ 雲端儲存失敗，已暫存至本機'
+                  : '📱 已儲存至本機（僅此瀏覽器可見）'}
+              </div>
+              {saveState.error && (
+                <div className="text-xs mt-1 text-amber-700 dark:text-amber-300">
+                  {saveState.error}
+                </div>
+              )}
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Severity badge */}
         <Card className="shadow-sm rounded-xl">
@@ -195,6 +284,7 @@ export function StepComplete({ data }: StepCompleteProps) {
           <Button variant="outline" className="w-full h-14 text-lg">
             暫不註冊（資料保留 7 天）
           </Button>
+        </div>
         </div>
       </div>
 

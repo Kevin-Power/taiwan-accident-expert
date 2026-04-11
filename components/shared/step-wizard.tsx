@@ -23,28 +23,34 @@ export function StepWizard({
   const progress = ((currentStep) / totalSteps) * 100;
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="sticky top-0 z-10 bg-background border-b px-4 py-2">
-        <div className="flex items-center justify-between text-base font-medium text-muted-foreground mb-1">
-          <span>步驟 {currentStep}/{totalSteps}</span>
-          <span className="text-base">{stepTitle}</span>
+    <div className="flex flex-col min-h-[100dvh] bg-background">
+      <div className="sticky top-0 z-10 bg-background border-b">
+        <div className="max-w-lg mx-auto w-full px-5 py-2">
+          <div className="flex items-center justify-between text-base font-medium text-muted-foreground mb-1">
+            <span>步驟 {currentStep}/{totalSteps}</span>
+            <span className="text-base">{stepTitle}</span>
+          </div>
+          <Progress value={progress} className="h-2.5" />
         </div>
-        <Progress value={progress} className="h-2.5" />
       </div>
 
-      <div className="flex-1 px-5 py-8 overflow-y-auto">
-        {children}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-lg mx-auto w-full px-5 py-8">
+          {children}
+        </div>
       </div>
 
-      <div className="sticky bottom-0 bg-background border-t px-5 py-4 flex gap-3">
-        {showBack && currentStep > 1 && onBack && (
-          <Button variant="outline" onClick={onBack} className="flex-1 h-14 text-lg">
-            上一步
+      <div className="sticky bottom-0 bg-background border-t safe-area-bottom">
+        <div className="max-w-lg mx-auto w-full px-5 py-4 flex gap-3">
+          {showBack && currentStep > 1 && onBack && (
+            <Button variant="outline" onClick={onBack} className="flex-1 h-14 text-lg">
+              上一步
+            </Button>
+          )}
+          <Button onClick={onNext} disabled={nextDisabled} className="flex-1 h-14 text-xl font-semibold">
+            {nextLabel}
           </Button>
-        )}
-        <Button onClick={onNext} disabled={nextDisabled} className="flex-1 h-14 text-xl font-semibold">
-          {nextLabel}
-        </Button>
+        </div>
       </div>
     </div>
   );
