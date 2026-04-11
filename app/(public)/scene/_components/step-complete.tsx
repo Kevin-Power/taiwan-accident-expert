@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import { SeverityBadge } from '@/components/shared/risk-badge';
 import { CountdownBadge } from '@/components/shared/countdown-badge';
 import { DisclaimerFooter } from '@/components/shared/disclaimer-footer';
@@ -11,6 +12,7 @@ import { triageAccident } from '@/lib/rules-engine/triage';
 import { calculateDeadlines } from '@/lib/rules-engine/deadlines';
 import { findMatchingScenarios } from '@/lib/rules-engine/scenarios';
 import { DOCUMENT_TEMPLATES } from '@/lib/templates/all-templates';
+import { isGeneratorAvailable } from '@/lib/templates/generators';
 import { ScenarioGuidanceCard } from '@/components/shared/scenario-guidance-card';
 import type { SceneData } from './scene-wizard';
 
@@ -55,6 +57,21 @@ export function StepComplete({ data }: StepCompleteProps) {
 
   // Filter to P0 + P1 templates
   const availableDocuments = DOCUMENT_TEMPLATES.filter(t => t.priority === 'P0' || t.priority === 'P1');
+
+  // Save scene data to sessionStorage so document preview pages can read it
+  useEffect(() => {
+    const caseId = `ACC-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${String(Date.now()).slice(-4)}`;
+    const payload = {
+      ...data,
+      caseId,
+      accidentDate: new Date().toISOString(),
+    };
+    try {
+      sessionStorage.setItem('accident_expert_scene_data', JSON.stringify(payload));
+    } catch {
+      // sessionStorage may fail in private mode — ignore
+    }
+  }, [data]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -116,22 +133,44 @@ export function StepComplete({ data }: StepCompleteProps) {
               <span>可生成的文件</span>
               <span className="text-base font-normal text-muted-foreground">（{availableDocuments.length} 種）</span>
             </h3>
-            <p className="text-base text-muted-foreground">完成註冊後，系統可協助你生成以下文件：</p>
+            <p className="text-base text-muted-foreground">點擊可直接預覽/列印的文件，其餘將在下一階段開放：</p>
             <div className="space-y-2">
-              {availableDocuments.map((doc) => (
-                <div key={doc.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-                  <span className="shrink-0 inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-xs font-bold text-blue-700 dark:text-blue-300">
-                    {doc.priority}
-                  </span>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base font-semibold">{doc.name}</span>
-                      <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">{doc.category}</span>
+              {availableDocuments.map((doc) => {
+                const isAvailable = isGeneratorAvailable(doc.id);
+                const cardInner = (
+                  <>
+                    <span className="shrink-0 inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-xs font-bold text-blue-700 dark:text-blue-300">
+                      {doc.priority}
+                    </span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-base font-semibold">{doc.name}</span>
+                        <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">{doc.category}</span>
+                        {isAvailable ? (
+                          <span className="text-xs font-bold text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-300 px-2 py-0.5 rounded">可生成 →</span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">即將開放</span>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-0.5">{doc.description}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-0.5">{doc.description}</p>
+                  </>
+                );
+
+                return isAvailable ? (
+                  <Link
+                    key={doc.id}
+                    href={`/document/${doc.id}`}
+                    className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors border border-transparent hover:border-blue-300"
+                  >
+                    {cardInner}
+                  </Link>
+                ) : (
+                  <div key={doc.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 opacity-70">
+                    {cardInner}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>
