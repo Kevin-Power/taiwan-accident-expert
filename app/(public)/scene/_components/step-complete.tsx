@@ -279,13 +279,18 @@ export function StepComplete({ data }: StepCompleteProps) {
 
         {/* Action buttons */}
         <div className="space-y-3">
-          <Link href="/my-cases">
+          <Link href={saveState?.caseId ? `/my-cases/${saveState.caseId}` : '/my-cases'}>
             <Button className="w-full h-14 text-lg font-semibold shadow-lg rounded-xl">
-              📋 查看我的案件
+              📋 查看案件詳情與文件
+            </Button>
+          </Link>
+          <Link href="/my-cases">
+            <Button variant="outline" className="w-full h-14 text-lg">
+              📂 所有案件列表
             </Button>
           </Link>
           <Link href="/">
-            <Button variant="outline" className="w-full h-14 text-lg">
+            <Button variant="ghost" className="w-full h-12 text-base text-muted-foreground">
               🏠 回到首頁
             </Button>
           </Link>

@@ -152,7 +152,7 @@ export default function DocumentPreviewPage({ params }: Props) {
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Link href="/"><Button variant="ghost" size="sm">🏠</Button></Link>
-            <Link href="/scene"><Button variant="outline" size="sm">← 返回精靈</Button></Link>
+            <Link href={`/my-cases/${doc.caseId}`}><Button variant="outline" size="sm">← 返回案件</Button></Link>
           </div>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleCopy}>
