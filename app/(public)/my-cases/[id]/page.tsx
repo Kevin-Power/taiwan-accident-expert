@@ -94,7 +94,7 @@ export default function GuestCaseDetailPage({ params }: Props) {
     return (
       <div className="flex flex-col min-h-screen">
         <header className="border-b px-4 py-3">
-          <a href="/" className="text-xl font-bold">台灣車禍事故處理專家</a>
+          <a href="/" className="text-xl font-bold hover:text-primary">台灣車禍事故處理專家</a>
         </header>
         <main className="flex-1 flex flex-col items-center justify-center px-5 gap-4">
           <div className="text-5xl">😕</div>
@@ -112,7 +112,7 @@ export default function GuestCaseDetailPage({ params }: Props) {
       <header className="border-b px-4 py-3">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <a href="/my-cases" className="text-base text-muted-foreground hover:text-foreground">← 案件列表</a>
-          <a href="/" className="text-xl font-bold hover:text-primary">車禍專家</a>
+          <a href="/" className="text-base font-bold hover:text-primary">車禍專家</a>
         </div>
       </header>
 
@@ -199,7 +199,7 @@ export default function GuestCaseDetailPage({ params }: Props) {
 
           {/* Escalation */}
           {triageResult?.escalateToHuman && (
-            <Alert className="border-red-500 bg-red-50">
+            <Alert className="border-red-500 bg-red-50 dark:bg-red-950/20">
               <AlertDescription className="space-y-2">
                 <p className="text-lg font-bold text-red-800">{triageResult.escalateReason}</p>
                 <a href="tel:412-8518" className="underline font-medium text-base block text-red-700">

@@ -43,7 +43,7 @@ export function StepWizard({
         </div>
       </div>
 
-      <div className="sticky bottom-0 bg-background border-t safe-area-bottom">
+      <div className="sticky bottom-0 bg-background border-t">
         <div className="max-w-lg mx-auto w-full px-5 py-4 flex gap-3">
           {showBack && currentStep > 1 && onBack && (
             <Button variant="outline" onClick={onBack} className="flex-1 h-14 text-lg">

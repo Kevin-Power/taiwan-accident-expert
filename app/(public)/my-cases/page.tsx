@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { SeverityBadge } from '@/components/shared/risk-badge';
-import { CountdownBadge } from '@/components/shared/countdown-badge';
 import { DisclaimerFooter } from '@/components/shared/disclaimer-footer';
 import { listCases, type CaseRecord } from '@/lib/cases/store';
 

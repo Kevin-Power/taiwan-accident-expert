@@ -31,30 +31,36 @@ export default function LandingPage() {
         </Link>
 
         <div className="grid gap-4 w-full max-w-md mt-6">
-          <Card className="shadow-sm rounded-xl hover:shadow-md transition-shadow">
-            <CardContent className="p-5">
-              <h3 className="text-lg font-bold mb-1">安全處置指引</h3>
-              <p className="text-base text-muted-foreground">
-                警示距離、可移車判斷、救護通報 — 每一步都有法規依據。
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm rounded-xl hover:shadow-md transition-shadow">
-            <CardContent className="p-5">
-              <h3 className="text-lg font-bold mb-1">時效提醒不漏步</h3>
-              <p className="text-base text-muted-foreground">
-                7日現場圖、30日研判表、6個月鑑定、2年保險時效 — 自動幫你算好。
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="shadow-sm rounded-xl hover:shadow-md transition-shadow">
-            <CardContent className="p-5">
-              <h3 className="text-lg font-bold mb-1">文件一鍵生成</h3>
-              <p className="text-base text-muted-foreground">
-                報案摘要、證據清單、事故時間線 — 結構化文件可下載。
-              </p>
-            </CardContent>
-          </Card>
+          <Link href="/scene">
+            <Card className="shadow-sm rounded-xl transition-shadow hover:shadow-md hover:border-primary/30 cursor-pointer">
+              <CardContent className="p-5">
+                <h3 className="text-lg font-bold mb-1">安全處置指引</h3>
+                <p className="text-base text-muted-foreground">
+                  警示距離、可移車判斷、救護通報 — 每一步都有法規依據。
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/scene">
+            <Card className="shadow-sm rounded-xl transition-shadow hover:shadow-md hover:border-primary/30 cursor-pointer">
+              <CardContent className="p-5">
+                <h3 className="text-lg font-bold mb-1">時效提醒不漏步</h3>
+                <p className="text-base text-muted-foreground">
+                  7日現場圖、30日研判表、6個月鑑定、2年保險時效 — 自動幫你算好。
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/scene">
+            <Card className="shadow-sm rounded-xl transition-shadow hover:shadow-md hover:border-primary/30 cursor-pointer">
+              <CardContent className="p-5">
+                <h3 className="text-lg font-bold mb-1">文件一鍵生成</h3>
+                <p className="text-base text-muted-foreground">
+                  報案摘要、證據清單、事故時間線 — 結構化文件可下載。
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       </main>
 
