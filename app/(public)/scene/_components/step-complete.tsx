@@ -145,8 +145,9 @@ export function StepComplete({ data }: StepCompleteProps) {
         {/* Save status alert */}
         {!saveState ? (
           <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950/20">
-            <AlertDescription className="text-blue-800 dark:text-blue-200 text-lg font-semibold">
-              儲存中...
+            <AlertDescription className="text-blue-800 dark:text-blue-200 text-lg font-semibold flex items-center gap-3">
+              <span className="h-5 w-5 animate-spin rounded-full border-3 border-blue-600 border-t-transparent inline-block shrink-0" />
+              案件儲存中...
             </AlertDescription>
           </Alert>
         ) : (

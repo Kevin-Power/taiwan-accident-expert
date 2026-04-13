@@ -72,7 +72,7 @@ export function StepSafety({ data, updateData, onNext }: StepSafetyProps) {
         {/* Safety checklist */}
         <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4">
-            <h2 className="font-semibold text-xl mb-3">立即執行安全措施</h2>
+            <h2 className="font-semibold text-xl mb-3">🚨 立即執行安全措施</h2>
             <ul className="space-y-3">
               {SAFETY_CHECKLIST.map(item => (
                 <li key={item.id} className="flex items-start gap-3">
@@ -89,7 +89,7 @@ export function StepSafety({ data, updateData, onNext }: StepSafetyProps) {
         {/* Road conditions */}
         <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4">
-            <h2 className="font-semibold text-xl mb-4">道路環境</h2>
+            <h2 className="font-semibold text-xl mb-4">🛣️ 道路環境</h2>
             <div className="space-y-4">
               {/* Road type */}
               <div className="space-y-1.5">

@@ -53,19 +53,19 @@ function YesNoButtons({ value, onChange, yesLabel = '是', noLabel = '否' }: Ye
 
 const decisionConfig: Record<string, { label: string; colorClass: string }> = {
   must_move: {
-    label: '必須移車',
+    label: '✅ 必須移車',
     colorClass: 'border-blue-500 bg-blue-50 dark:bg-blue-950/20',
   },
   may_move: {
-    label: '可以移車',
+    label: '⚠️ 可以移車',
     colorClass: 'border-green-500 bg-green-50 dark:bg-green-950/20',
   },
   must_not_move: {
-    label: '不得移車',
+    label: '🚫 不得移車',
     colorClass: 'border-red-500 bg-red-50 dark:bg-red-950/20',
   },
   wait_for_tow: {
-    label: '等候拖吊',
+    label: '🔧 等候拖吊',
     colorClass: 'border-orange-500 bg-orange-50 dark:bg-orange-950/20',
   },
 };
@@ -96,7 +96,7 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
         {/* Quick questions */}
         <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4 space-y-5">
-            <h2 className="text-2xl font-bold">車輛狀況</h2>
+            <h2 className="text-2xl font-bold">🚗 車輛狀況</h2>
 
             <div className="space-y-2">
               <p className="text-base font-medium">車輛可以自行行駛？</p>
@@ -144,7 +144,7 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
         {moveResult.nextSteps.length > 0 && (
           <Card className="shadow-sm rounded-xl">
             <CardContent className="pt-4">
-              <h3 className="font-semibold text-base mb-3">處理步驟</h3>
+              <h3 className="font-semibold text-base mb-3">📋 處理步驟</h3>
               <ol className="space-y-2">
                 {moveResult.nextSteps.map((step, i) => (
                   <li key={i} className="flex items-start gap-3 text-base">

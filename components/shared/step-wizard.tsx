@@ -26,9 +26,12 @@ export function StepWizard({
     <div className="flex flex-col min-h-[100dvh] bg-background">
       <div className="sticky top-0 z-10 bg-background border-b">
         <div className="max-w-lg mx-auto w-full px-5 py-2">
-          <div className="flex items-center justify-between text-base font-medium text-muted-foreground mb-1">
-            <span>步驟 {currentStep}/{totalSteps}</span>
-            <span className="text-base">{stepTitle}</span>
+          <div className="flex items-center justify-between mb-1">
+            <a href="/" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
+              ← 首頁
+            </a>
+            <span className="text-base font-medium text-muted-foreground">步驟 {currentStep}/{totalSteps}</span>
+            <span className="text-base text-muted-foreground">{stepTitle}</span>
           </div>
           <Progress value={progress} className="h-2.5" />
         </div>

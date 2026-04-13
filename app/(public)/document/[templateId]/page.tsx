@@ -115,8 +115,9 @@ export default function DocumentPreviewPage({ params }: Props) {
 
   if (!doc) {
     return (
-      <div className="flex flex-col min-h-screen items-center justify-center">
-        <p className="text-lg text-muted-foreground">載入中...</p>
+      <div className="flex flex-col min-h-screen items-center justify-center gap-4">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-lg text-muted-foreground">文件生成中...</p>
       </div>
     );
   }
@@ -126,9 +127,10 @@ export default function DocumentPreviewPage({ params }: Props) {
       {/* Toolbar (hidden when printing) */}
       <div className="sticky top-0 z-10 bg-background border-b px-5 py-3 print:hidden">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-3">
-          <Link href="/scene">
-            <Button variant="outline" size="sm">← 返回</Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/"><Button variant="ghost" size="sm">🏠</Button></Link>
+            <Link href="/scene"><Button variant="outline" size="sm">← 返回精靈</Button></Link>
+          </div>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={handleCopy}>
               📋 複製文字

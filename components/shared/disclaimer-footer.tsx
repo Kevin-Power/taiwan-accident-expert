@@ -14,6 +14,13 @@ export function DisclaimerFooter() {
           官方網站
         </a>
       </p>
+      <div className="mt-2 flex gap-3 text-sm">
+        <a href="/privacy" className="underline hover:text-foreground">隱私權政策</a>
+        <span>|</span>
+        <a href="/terms" className="underline hover:text-foreground">服務條款</a>
+        <span>|</span>
+        <a href="/" className="underline hover:text-foreground">首頁</a>
+      </div>
     </div>
   );
 }

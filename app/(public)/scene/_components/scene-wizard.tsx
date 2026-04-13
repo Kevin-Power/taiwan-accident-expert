@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import type { RoadType, Weather, VehicleType } from '@/lib/rules-engine/types';
 import { StepSafety } from './step-safety';
 import { StepInjury } from './step-injury';
@@ -55,6 +55,10 @@ export function SceneWizard() {
   const updateData = useCallback((updates: Partial<SceneData>) => {
     setData(prev => ({ ...prev, ...updates }));
   }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
 
   const next = useCallback(() => setStep(s => Math.min(s + 1, 6)), []);
   const back = useCallback(() => setStep(s => Math.max(s - 1, 1)), []);
