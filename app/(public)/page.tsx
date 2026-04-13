@@ -24,7 +24,7 @@ export default function LandingPage() {
           </Button>
         </Link>
 
-        <Link href="/dashboard" className="w-full max-w-md">
+        <Link href="/my-cases" className="w-full max-w-md">
           <Button variant="outline" size="lg" className="w-full h-14 text-lg font-semibold rounded-xl">
             管理我的案件
           </Button>

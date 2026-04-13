@@ -279,12 +279,16 @@ export function StepComplete({ data }: StepCompleteProps) {
 
         {/* Action buttons */}
         <div className="space-y-3">
-          <Button className="w-full h-14 text-lg font-semibold shadow-lg rounded-xl">
-            註冊帳號，永久保存案件
-          </Button>
-          <Button variant="outline" className="w-full h-14 text-lg">
-            暫不註冊（資料保留 7 天）
-          </Button>
+          <Link href="/my-cases">
+            <Button className="w-full h-14 text-lg font-semibold shadow-lg rounded-xl">
+              📋 查看我的案件
+            </Button>
+          </Link>
+          <Link href="/">
+            <Button variant="outline" className="w-full h-14 text-lg">
+              🏠 回到首頁
+            </Button>
+          </Link>
         </div>
         </div>
       </div>

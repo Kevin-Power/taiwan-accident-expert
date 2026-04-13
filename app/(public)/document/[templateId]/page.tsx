@@ -20,9 +20,29 @@ export default function DocumentPreviewPage({ params }: Props) {
 
   useEffect(() => {
     // Read scene data from sessionStorage
-    const raw = sessionStorage.getItem('accident_expert_scene_data');
+    let raw = sessionStorage.getItem('accident_expert_scene_data');
+
+    // Fallback: if sessionStorage is empty, try loading the most recent case from localStorage
     if (!raw) {
-      setError('找不到案件資料，請重新完成事故精靈流程。');
+      try {
+        const localCases = localStorage.getItem('accident_expert_local_cases');
+        if (localCases) {
+          const cases = JSON.parse(localCases);
+          if (Array.isArray(cases) && cases.length > 0) {
+            const latest = cases[0]; // sorted by most recent
+            raw = JSON.stringify({
+              ...latest,
+              caseId: latest.id,
+            });
+          }
+        }
+      } catch {
+        // ignore localStorage errors
+      }
+    }
+
+    if (!raw) {
+      setError('找不到案件資料。請先完成事故精靈流程，或從「我的案件」頁面開啟案件後再生成文件。');
       return;
     }
 
@@ -102,9 +122,12 @@ export default function DocumentPreviewPage({ params }: Props) {
               {error}
             </AlertDescription>
           </Alert>
-          <div className="mt-6">
+          <div className="mt-6 flex gap-3">
             <Link href="/scene">
               <Button size="lg" className="h-14 text-lg">返回事故精靈</Button>
+            </Link>
+            <Link href="/my-cases">
+              <Button variant="outline" size="lg" className="h-14 text-lg">📋 我的案件</Button>
             </Link>
           </div>
         </div>
