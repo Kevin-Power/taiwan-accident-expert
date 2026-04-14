@@ -89,6 +89,7 @@ export function StepComplete({ data }: StepCompleteProps) {
           suspectedHitAndRun: data.suspectedHitAndRun,
         },
         accidentDate: new Date().toISOString(),
+        locationText: data.locationText ?? null,
         roadType: data.roadType ?? null,
         speedLimit: data.speedLimit ?? null,
         weather: data.weather ?? null,

@@ -31,7 +31,8 @@ export interface SceneData {
   hasSurveillance: boolean;
   hasDashcam: boolean;
   hasSkidMarks: boolean;
-  // Step 5: Info exchange (for later)
+  // Step 5: Info exchange
+  locationText?: string;
   otherPartyName?: string;
   otherPartyPlate?: string;
   otherPartyPhone?: string;

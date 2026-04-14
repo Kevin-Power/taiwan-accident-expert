@@ -19,7 +19,7 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
     <StepWizard
       currentStep={5}
       totalSteps={6}
-      stepTitle="資訊交換"
+      stepTitle="📝 資訊交換"
       onNext={onNext}
       onBack={onBack}
       nextLabel="完成，建立案件"
@@ -32,10 +32,28 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
           </AlertDescription>
         </Alert>
 
+        {/* Location */}
+        <Card className="shadow-sm rounded-xl">
+          <CardContent className="pt-4 space-y-4">
+            <h2 className="text-lg font-bold">📍 事故地點</h2>
+            <div className="space-y-1.5">
+              <Label htmlFor="locationText" className="text-base">地點描述</Label>
+              <Input
+                id="locationText"
+                className="h-12 text-base"
+                value={data.locationText || ''}
+                onChange={(e) => updateData({ locationText: e.target.value })}
+                placeholder="例：台北市信義區忠孝東路五段與松仁路口"
+              />
+              <p className="text-sm text-muted-foreground">填寫路名+路口或地標，越精確越好</p>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Other party section */}
         <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4 space-y-4">
-            <h2 className="text-lg font-bold">對方當事人</h2>
+            <h2 className="text-lg font-bold">👤 對方當事人</h2>
 
             <div className="space-y-1.5">
               <Label htmlFor="otherPartyName" className="text-base">姓名</Label>
@@ -87,7 +105,7 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
         {/* Witness section */}
         <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4 space-y-4">
-            <h2 className="text-lg font-bold">目擊者（如有）</h2>
+            <h2 className="text-lg font-bold">👁️ 目擊者（如有）</h2>
 
             <div className="space-y-1.5">
               <Label htmlFor="witnessName" className="text-base">目擊者姓名</Label>
