@@ -140,23 +140,28 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
           ))}
         </div>
 
-        {/* Step-by-step instructions */}
+        {/* Step-by-step instructions — prominent, can't-miss style */}
         {moveResult.nextSteps.length > 0 && (
-          <Card className="shadow-sm rounded-xl">
-            <CardContent className="pt-4">
-              <h3 className="font-semibold text-base mb-3">📋 處理步驟</h3>
-              <ol className="space-y-2">
-                {moveResult.nextSteps.map((step, i) => (
-                  <li key={i} className="flex items-start gap-3 text-base">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
-                      {i + 1}
-                    </span>
-                    <span>{step}</span>
-                  </li>
-                ))}
-              </ol>
-            </CardContent>
-          </Card>
+          <div>
+            <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+              <span>📋</span>
+              <span>現在要做的事</span>
+              <span className="text-base font-normal text-muted-foreground">（依序執行）</span>
+            </h3>
+            <div className="space-y-2">
+              {moveResult.nextSteps.map((step, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-4 p-4 rounded-xl border-2 border-primary/20 bg-primary/5"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-bold">
+                    {i + 1}
+                  </span>
+                  <span className="text-base font-medium pt-1.5">{step}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Law references */}
