@@ -1,0 +1,30 @@
+name: Keep Supabase Alive
+
+# Run every 5 days to prevent Supabase free-tier auto-pause (7-day inactivity limit)
+on:
+  schedule:
+    # At 09:00 UTC every 5 days (Monday and Saturday)
+    - cron: '0 9 */5 * *'
+  # Also allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          echo "Pinging health endpoint to keep Supabase alive..."
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" https://taiwan-accident-expert.vercel.app/api/health)
+          BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS/d')
+          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | sed 's/HTTP_STATUS://')
+
+          echo "Response: $BODY"
+          echo "HTTP Status: $STATUS"
+
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Health check passed — Supabase is alive"
+          else
+            echo "❌ Health check failed with status $STATUS"
+            exit 1
+          fi
