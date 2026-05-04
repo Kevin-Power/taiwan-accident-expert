@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { StepWizard } from '@/components/shared/step-wizard';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,7 +16,64 @@ interface StepInfoExchangeProps {
   onBack: () => void;
 }
 
+type LocateState = 'idle' | 'requesting' | 'resolving' | 'success' | 'error';
+
 export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoExchangeProps) {
+  const [locateState, setLocateState] = useState<LocateState>('idle');
+  const [locateError, setLocateError] = useState<string>('');
+
+  const handleAutoDetect = () => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setLocateState('error');
+      setLocateError('您的瀏覽器不支援定位功能');
+      return;
+    }
+
+    setLocateState('requesting');
+    setLocateError('');
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setLocateState('resolving');
+
+        try {
+          // Reverse geocode using OpenStreetMap Nominatim (free, no API key)
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=zh-TW&zoom=18`,
+            { headers: { 'User-Agent': 'taiwan-accident-expert' } }
+          );
+          if (!res.ok) throw new Error('reverse_geocode_failed');
+          const json = await res.json();
+          const addr = json.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+          updateData({ locationText: addr });
+          setLocateState('success');
+        } catch {
+          // Fallback: use raw coordinates
+          updateData({ locationText: `經緯度：${lat.toFixed(6)}, ${lng.toFixed(6)}` });
+          setLocateState('success');
+        }
+      },
+      (err) => {
+        setLocateState('error');
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocateError('您拒絕了定位權限，請手動輸入地點');
+        } else if (err.code === err.POSITION_UNAVAILABLE) {
+          setLocateError('無法取得位置，請手動輸入');
+        } else if (err.code === err.TIMEOUT) {
+          setLocateError('定位逾時，請手動輸入或重試');
+        } else {
+          setLocateError('定位失敗，請手動輸入');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  };
+
+  const isLocating = locateState === 'requesting' || locateState === 'resolving';
+
   return (
     <StepWizard
       currentStep={5}
@@ -33,11 +92,48 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
         </Alert>
 
         {/* Location */}
-        <Card className="shadow-sm rounded-xl">
+        <Card className="shadow-sm rounded-xl border-2 border-amber-200 dark:border-amber-900/50 bg-amber-50/30 dark:bg-amber-950/10">
           <CardContent className="pt-4 space-y-4">
-            <h2 className="text-lg font-bold">📍 事故地點</h2>
+            <div>
+              <h2 className="text-lg font-bold">📍 事故地點 <span className="text-red-600 text-base">*</span></h2>
+              <p className="text-sm text-muted-foreground mt-1">所有文件都需要地點，建議使用自動定位</p>
+            </div>
+
+            {/* Auto-detect button — primary action */}
+            <Button
+              type="button"
+              onClick={handleAutoDetect}
+              disabled={isLocating}
+              className="w-full h-14 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-md rounded-xl"
+            >
+              {locateState === 'requesting' && (
+                <span className="flex items-center gap-2">
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  正在取得 GPS 座標...
+                </span>
+              )}
+              {locateState === 'resolving' && (
+                <span className="flex items-center gap-2">
+                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  解析地址中...
+                </span>
+              )}
+              {locateState === 'idle' && '📍 一鍵自動定位'}
+              {locateState === 'success' && '✅ 已定位（再次定位）'}
+              {locateState === 'error' && '🔄 重試定位'}
+            </Button>
+
+            {locateError && (
+              <Alert className="border-red-300 bg-red-50">
+                <AlertDescription className="text-red-800 text-sm">{locateError}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* Manual fallback */}
             <div className="space-y-1.5">
-              <Label htmlFor="locationText" className="text-base">地點描述</Label>
+              <Label htmlFor="locationText" className="text-base">
+                {locateState === 'success' ? '已自動填入（可手動修正）' : '或手動輸入地點'}
+              </Label>
               <Input
                 id="locationText"
                 className="h-12 text-base"
@@ -45,7 +141,7 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
                 onChange={(e) => updateData({ locationText: e.target.value })}
                 placeholder="例：台北市信義區忠孝東路五段與松仁路口"
               />
-              <p className="text-sm text-muted-foreground">填寫路名+路口或地標，越精確越好</p>
+              <p className="text-sm text-muted-foreground">路名+路口或地標，越精確越好</p>
             </div>
           </CardContent>
         </Card>
