@@ -16,13 +16,14 @@ interface StepInfoExchangeProps {
   onBack: () => void;
 }
 
-type LocateState = 'idle' | 'requesting' | 'resolving' | 'success' | 'error';
+type LocateState = 'idle' | 'requesting' | 'got_coords' | 'resolving' | 'success' | 'error';
 
 export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoExchangeProps) {
   const [locateState, setLocateState] = useState<LocateState>('idle');
   const [locateError, setLocateError] = useState<string>('');
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
-  const handleAutoDetect = () => {
+  const handleGetCoords = () => {
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       setLocateState('error');
       setLocateError('您的瀏覽器不支援定位功能');
@@ -33,28 +34,13 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
     setLocateError('');
 
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
+      (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
-        setLocateState('resolving');
-
-        try {
-          // Reverse geocode using OpenStreetMap Nominatim (free, no API key)
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=zh-TW&zoom=18`,
-            { headers: { 'User-Agent': 'taiwan-accident-expert' } }
-          );
-          if (!res.ok) throw new Error('reverse_geocode_failed');
-          const json = await res.json();
-          const addr = json.display_name || `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-
-          updateData({ locationText: addr });
-          setLocateState('success');
-        } catch {
-          // Fallback: use raw coordinates
-          updateData({ locationText: `經緯度：${lat.toFixed(6)}, ${lng.toFixed(6)}` });
-          setLocateState('success');
-        }
+        setCoords({ lat, lng });
+        // Save raw coords as the location text initially
+        updateData({ locationText: `經緯度：${lat.toFixed(6)}, ${lng.toFixed(6)}` });
+        setLocateState('got_coords');
       },
       (err) => {
         setLocateState('error');
@@ -70,6 +56,24 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
     );
+  };
+
+  const handleResolveAddress = async () => {
+    if (!coords) return;
+    setLocateState('resolving');
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${coords.lat}&lon=${coords.lng}&format=json&accept-language=zh-TW&zoom=18`,
+        { headers: { 'User-Agent': 'taiwan-accident-expert' } }
+      );
+      if (!res.ok) throw new Error('reverse_geocode_failed');
+      const json = await res.json();
+      const addr = json.display_name || `${coords.lat.toFixed(5)}, ${coords.lng.toFixed(5)}`;
+      updateData({ locationText: addr });
+      setLocateState('success');
+    } catch {
+      setLocateState('success'); // keep coords as fallback
+    }
   };
 
   const isLocating = locateState === 'requesting' || locateState === 'resolving';
@@ -100,28 +104,86 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
             </div>
 
             {/* Auto-detect button — primary action */}
-            <Button
-              type="button"
-              onClick={handleAutoDetect}
-              disabled={isLocating}
-              className="w-full h-14 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-md rounded-xl"
-            >
-              {locateState === 'requesting' && (
+            {(locateState === 'idle' || locateState === 'error') && (
+              <Button
+                type="button"
+                onClick={handleGetCoords}
+                className="w-full h-14 text-lg font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-md rounded-xl"
+              >
+                {locateState === 'error' ? '🔄 重試取得 GPS 座標' : '📍 取得 GPS 座標'}
+              </Button>
+            )}
+
+            {locateState === 'requesting' && (
+              <Button
+                type="button"
+                disabled
+                className="w-full h-14 text-lg font-semibold bg-blue-600 text-white shadow-md rounded-xl"
+              >
                 <span className="flex items-center gap-2">
                   <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  正在取得 GPS 座標...
+                  正在取得 GPS...
                 </span>
-              )}
-              {locateState === 'resolving' && (
+              </Button>
+            )}
+
+            {locateState === 'got_coords' && coords && (
+              <>
+                <Alert className="border-blue-300 bg-blue-50">
+                  <AlertDescription className="text-blue-800 text-sm">
+                    📍 GPS 座標已取得（{coords.lat.toFixed(5)}, {coords.lng.toFixed(5)}）。
+                    <br />
+                    要轉成可讀地址需傳送座標至 OpenStreetMap（第三方服務）。
+                  </AlertDescription>
+                </Alert>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    type="button"
+                    onClick={handleResolveAddress}
+                    className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl"
+                  >
+                    🌐 轉成地址（將傳送至 OpenStreetMap）
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setLocateState('success')}
+                    className="w-full h-12 text-base rounded-xl"
+                  >
+                    ✅ 使用座標即可
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {locateState === 'resolving' && (
+              <Button
+                type="button"
+                disabled
+                className="w-full h-14 text-lg font-semibold bg-blue-600 text-white shadow-md rounded-xl"
+              >
                 <span className="flex items-center gap-2">
                   <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   解析地址中...
                 </span>
-              )}
-              {locateState === 'idle' && '📍 一鍵自動定位'}
-              {locateState === 'success' && '✅ 已定位（再次定位）'}
-              {locateState === 'error' && '🔄 重試定位'}
-            </Button>
+              </Button>
+            )}
+
+            {locateState === 'success' && (
+              <div className="flex items-center gap-3">
+                <span className="text-green-700 font-semibold text-base">✅ 已定位</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCoords(null);
+                    setLocateState('idle');
+                  }}
+                  className="text-sm text-blue-600 underline"
+                >
+                  再次定位
+                </button>
+              </div>
+            )}
 
             {locateError && (
               <Alert className="border-red-300 bg-red-50">

@@ -33,10 +33,10 @@ export function StepComplete({ data }: StepCompleteProps) {
       hasHazmat: data.hasHazmat,
       suspectedDUI: data.suspectedDUI,
       suspectedHitAndRun: data.suspectedHitAndRun,
-      hasMinor: false,
-      hasForeignNational: false,
+      hasMinor: data.hasMinor,
+      hasForeignNational: data.hasForeignNational,
     });
-  }, [data.hasDeaths, data.hasInjuries, data.vehicleTypes, data.hasFire, data.hasHazmat, data.suspectedDUI, data.suspectedHitAndRun]);
+  }, [data.hasDeaths, data.hasInjuries, data.vehicleTypes, data.hasFire, data.hasHazmat, data.suspectedDUI, data.suspectedHitAndRun, data.hasMinor, data.hasForeignNational]);
 
   // Prefer user-entered accident date; fall back to now
   const accidentDate = data.accidentDate ? new Date(data.accidentDate) : new Date();

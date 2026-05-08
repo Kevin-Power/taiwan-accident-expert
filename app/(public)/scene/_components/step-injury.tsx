@@ -40,10 +40,10 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
       hasHazmat: data.hasHazmat,
       suspectedDUI: data.suspectedDUI,
       suspectedHitAndRun: data.suspectedHitAndRun,
-      hasMinor: false,
-      hasForeignNational: false,
+      hasMinor: data.hasMinor,
+      hasForeignNational: data.hasForeignNational,
     });
-  }, [hasAnswered, data.hasDeaths, data.hasInjuries, data.hasFire, data.hasHazmat, data.suspectedDUI, data.suspectedHitAndRun]);
+  }, [hasAnswered, data.hasDeaths, data.hasInjuries, data.hasFire, data.hasHazmat, data.suspectedDUI, data.suspectedHitAndRun, data.hasMinor, data.hasForeignNational]);
 
   function selectSeverity(choice: SeverityChoice) {
     updateData({
@@ -70,7 +70,7 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
       stepTitle="傷亡確認"
       onNext={onNext}
       onBack={onBack}
-      nextDisabled={!hasAnswered}
+      nextDisabled={!hasAnswered || data.vehicleTypes.length === 0}
     >
       <div className="space-y-6">
         {/* Emergency call bar — always visible at the top */}
@@ -134,6 +134,80 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
             </div>
           </button>
         </div>
+
+        {/* Involved party types */}
+        <Card className="shadow-sm rounded-xl">
+          <CardContent className="pt-4 space-y-4">
+            <div>
+              <h3 className="font-semibold text-base">事故涉及哪些人/車？</h3>
+              <p className="text-sm text-muted-foreground">可複選（影響蒐證重點與情境指引）</p>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { type: 'car' as const, emoji: '🚗', label: '汽車' },
+                { type: 'motorcycle' as const, emoji: '🏍️', label: '機車' },
+                { type: 'bicycle' as const, emoji: '🚲', label: '腳踏車' },
+                { type: 'pedestrian' as const, emoji: '🚶', label: '行人' },
+                { type: 'truck' as const, emoji: '🚚', label: '貨車' },
+                { type: 'bus' as const, emoji: '🚌', label: '公車' },
+              ].map(({ type, emoji, label }) => {
+                const count = data.vehicleTypes.filter(t => t === type).length;
+                const selected = count > 0;
+                return (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => {
+                      if (count === 0) {
+                        // Add one
+                        updateData({ vehicleTypes: [...data.vehicleTypes, type] });
+                      } else if (count >= 2) {
+                        // Remove all of this type
+                        updateData({ vehicleTypes: data.vehicleTypes.filter(t => t !== type) });
+                      } else {
+                        // Add another (count===1)
+                        updateData({ vehicleTypes: [...data.vehicleTypes, type] });
+                      }
+                    }}
+                    className={`rounded-lg border-2 p-3 text-left transition-all ${
+                      selected
+                        ? 'border-primary bg-primary/10'
+                        : 'border-muted hover:border-primary/40'
+                    }`}
+                  >
+                    <span className="text-2xl mr-2">{emoji}</span>
+                    <span className="text-base font-medium">{label}</span>
+                    {count > 1 && <span className="ml-1 text-sm text-primary font-bold">×{count}</span>}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground">點擊增加，再點清除</p>
+          </CardContent>
+        </Card>
+
+        {/* Special flags */}
+        <Card className="shadow-sm rounded-xl">
+          <CardContent className="pt-4">
+            <h3 className="font-semibold text-base mb-3">特殊狀況（選填）</h3>
+            <div className="space-y-2">
+              {[
+                { key: 'hasMinor' as const, label: '有未成年人涉案' },
+                { key: 'hasForeignNational' as const, label: '有外籍人士涉案' },
+              ].map(item => (
+                <label key={item.key} className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={!!data[item.key]}
+                    onChange={e => updateData({ [item.key]: e.target.checked })}
+                    className="h-4 w-4 rounded border-input"
+                  />
+                  <span className="text-base">{item.label}</span>
+                </label>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Additional risk flags */}
         <Card className="shadow-sm rounded-xl">

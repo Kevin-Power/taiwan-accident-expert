@@ -21,6 +21,8 @@ export interface SceneData {
   hasHazmat: boolean;
   suspectedDUI: boolean;
   suspectedHitAndRun: boolean;
+  hasMinor: boolean;
+  hasForeignNational: boolean;
   // Step 3: Vehicle move
   vehicleCanDrive: boolean | null;
   bothPartiesAgreeToMove: boolean | null;
@@ -47,6 +49,7 @@ export interface SceneData {
 const initialData: SceneData = {
   hasDeaths: null, hasInjuries: null, hasFire: false, hasHazmat: false,
   suspectedDUI: false, suspectedHitAndRun: false,
+  hasMinor: false, hasForeignNational: false,
   vehicleCanDrive: null, bothPartiesAgreeToMove: null, hasDispute: null,
   vehicleTypes: ['car', 'car'],
   hasTrafficSignal: false, hasSurveillance: false, hasDashcam: false, hasSkidMarks: false,
