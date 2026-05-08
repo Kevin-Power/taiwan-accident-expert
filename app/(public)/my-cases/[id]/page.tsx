@@ -11,6 +11,7 @@ import { LawReferenceBadge } from '@/components/shared/law-reference-badge';
 import { DisclaimerFooter } from '@/components/shared/disclaimer-footer';
 import { ScenarioGuidanceCard } from '@/components/shared/scenario-guidance-card';
 import { getCase, type CaseRecord } from '@/lib/cases/store';
+import { listEvidenceByCase, type StoredEvidence } from '@/lib/evidence/storage';
 import { calculateDeadlines } from '@/lib/rules-engine/deadlines';
 import { findMatchingScenarios } from '@/lib/rules-engine/scenarios';
 import { DOCUMENT_TEMPLATES } from '@/lib/templates/all-templates';
@@ -35,6 +36,7 @@ export default function GuestCaseDetailPage({ params }: Props) {
   const { id } = use(params);
   const [caseData, setCaseData] = useState<CaseRecord | null>(null);
   const [loading, setLoading] = useState(true);
+  const [evidence, setEvidence] = useState<StoredEvidence[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -88,6 +90,12 @@ export default function GuestCaseDetailPage({ params }: Props) {
       }
     }
     load();
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      listEvidenceByCase(id).then(setEvidence).catch(() => {});
+    }
   }, [id]);
 
   const deadlines = useMemo(() => {
@@ -202,6 +210,39 @@ export default function GuestCaseDetailPage({ params }: Props) {
                     <span className="text-base text-muted-foreground flex-1">{r.description}</span>
                   </div>
                 ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Evidence photos */}
+          {evidence.length > 0 && (
+            <Card className="shadow-sm rounded-xl">
+              <CardContent className="p-5 space-y-3">
+                <h3 className="text-lg font-bold">📷 蒐證照片（{evidence.length} 件）</h3>
+                <div className="grid grid-cols-3 gap-2">
+                  {evidence.map(ev => (
+                    <div key={ev.id} className="relative aspect-square">
+                      {ev.type === 'photo' ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={URL.createObjectURL(ev.blob)}
+                          alt={ev.filename}
+                          className="w-full h-full object-cover rounded"
+                        />
+                      ) : (
+                        <video
+                          src={URL.createObjectURL(ev.blob)}
+                          className="w-full h-full object-cover rounded"
+                          controls
+                        />
+                      )}
+                      <span className="absolute bottom-1 left-1 text-[10px] bg-black/60 text-white px-1 rounded">
+                        {ev.category}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">儲存於本機瀏覽器，每個檔案皆有 SHA-256 雜湊驗證</p>
               </CardContent>
             </Card>
           )}

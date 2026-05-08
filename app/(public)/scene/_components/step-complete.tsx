@@ -16,6 +16,7 @@ import { isGeneratorAvailable } from '@/lib/templates/generators';
 import { ScenarioGuidanceCard } from '@/components/shared/scenario-guidance-card';
 import { saveCase, isCloudStorageAvailable } from '@/lib/cases/store';
 import { getAnonymousId } from '@/lib/cases/anonymous-id';
+import { reassignEvidenceCase } from '@/lib/evidence/storage';
 import type { NewCaseInput } from '@/lib/cases/store';
 import type { SceneData } from './scene-wizard';
 
@@ -126,6 +127,15 @@ export function StepComplete({ data }: StepCompleteProps) {
       const result = await saveCase(newCase);
       if (cancelled) return;
       setSaveState(result);
+
+      // Reassign evidence captured during wizard from 'pending' to real case ID
+      if (result.caseId) {
+        try {
+          await reassignEvidenceCase('pending', result.caseId);
+        } catch {
+          // ignore — evidence stays as 'pending'
+        }
+      }
 
       // Also write to sessionStorage so document preview pages can read
       const sessionPayload = {
