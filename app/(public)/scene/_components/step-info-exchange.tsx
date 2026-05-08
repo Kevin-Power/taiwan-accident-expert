@@ -146,6 +146,69 @@ export function StepInfoExchange({ data, updateData, onNext, onBack }: StepInfoE
           </CardContent>
         </Card>
 
+        {/* Accident time + police */}
+        <Card className="shadow-sm rounded-xl">
+          <CardContent className="pt-4 space-y-4">
+            <h2 className="text-lg font-bold">⏰ 事故時間與報案</h2>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="accidentDate" className="text-base">事故發生時間</Label>
+              <Input
+                id="accidentDate"
+                type="datetime-local"
+                className="h-12 text-base"
+                value={data.accidentDate || ''}
+                onChange={(e) => updateData({ accidentDate: e.target.value })}
+              />
+              <p className="text-sm text-muted-foreground">用於計算 7日/30日/6個月期限</p>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-base">警方是否已到場？</Label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateData({ policeArrived: true })}
+                  className={`flex-1 rounded-lg border-2 h-12 text-base font-medium transition-all ${
+                    data.policeArrived === true
+                      ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950/30'
+                      : 'border-muted text-muted-foreground hover:border-green-300'
+                  }`}
+                >
+                  已到場
+                </button>
+                <button
+                  type="button"
+                  onClick={() => updateData({ policeArrived: false })}
+                  className={`flex-1 rounded-lg border-2 h-12 text-base font-medium transition-all ${
+                    data.policeArrived === false
+                      ? 'border-amber-500 bg-amber-50 text-amber-700 dark:bg-amber-950/30'
+                      : 'border-muted text-muted-foreground hover:border-amber-300'
+                  }`}
+                >
+                  尚未到場
+                </button>
+              </div>
+              {data.policeArrived === false && (
+                <p className="text-sm text-amber-700 dark:text-amber-400">⚠️ 未報警的話無法申請現場圖、初判表</p>
+              )}
+            </div>
+
+            {data.policeArrived && (
+              <div className="space-y-1.5">
+                <Label htmlFor="policeReportNo" className="text-base">案件編號（如已取得）</Label>
+                <Input
+                  id="policeReportNo"
+                  className="h-12 text-base"
+                  value={data.policeReportNo || ''}
+                  onChange={(e) => updateData({ policeReportNo: e.target.value })}
+                  placeholder="例：北市警刑字第 1234567 號"
+                />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Other party section */}
         <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4 space-y-4">

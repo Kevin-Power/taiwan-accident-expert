@@ -38,13 +38,19 @@ export function StepComplete({ data }: StepCompleteProps) {
     });
   }, [data.hasDeaths, data.hasInjuries, data.vehicleTypes, data.hasFire, data.hasHazmat, data.suspectedDUI, data.suspectedHitAndRun]);
 
+  // Prefer user-entered accident date; fall back to now
+  const accidentDate = data.accidentDate ? new Date(data.accidentDate) : new Date();
+  // Use actual policeArrived; default true for back-compat when unset
+  const policeArrived = data.policeArrived ?? true;
+
   const deadlinesResult = useMemo(() => {
     return calculateDeadlines({
-      accidentDate: new Date(),
+      accidentDate,
       severity: triageResult.severity,
-      policeArrived: true,
+      policeArrived,
     });
-  }, [triageResult.severity]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accidentDate.toISOString(), triageResult.severity, policeArrived]);
 
   const matchedScenarios = useMemo(() => findMatchingScenarios({
     severity: triageResult.severity,
@@ -88,7 +94,7 @@ export function StepComplete({ data }: StepCompleteProps) {
           suspectedDUI: data.suspectedDUI,
           suspectedHitAndRun: data.suspectedHitAndRun,
         },
-        accidentDate: new Date().toISOString(),
+        accidentDate: accidentDate.toISOString(),
         locationText: data.locationText ?? null,
         roadType: data.roadType ?? null,
         speedLimit: data.speedLimit ?? null,
@@ -113,7 +119,8 @@ export function StepComplete({ data }: StepCompleteProps) {
         triageResult,
         canMoveVehicle: !data.hasDeaths && (data.vehicleCanDrive ?? false) && (data.bothPartiesAgreeToMove ?? false) && !(data.hasDispute ?? false),
         moveVehicleReason: null,
-        policeArrived: true,
+        policeArrived,
+        policeReportNo: data.policeReportNo ?? null,
       };
 
       const result = await saveCase(newCase);

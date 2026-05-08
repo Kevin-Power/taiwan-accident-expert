@@ -6,6 +6,7 @@ import { LawReferenceBadge } from '@/components/shared/law-reference-badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { EmergencyCallBar } from '@/components/shared/emergency-call-bar';
 import { triageAccident } from '@/lib/rules-engine/triage';
 import type { SceneData } from './scene-wizard';
 
@@ -72,6 +73,9 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
       nextDisabled={!hasAnswered}
     >
       <div className="space-y-6">
+        {/* Emergency call bar — always visible at the top */}
+        <EmergencyCallBar />
+
         {/* Three big severity buttons */}
         <div className="space-y-3">
           <h2 className="text-2xl font-bold">事故傷亡情況</h2>

@@ -5,6 +5,7 @@ import { StepWizard } from '@/components/shared/step-wizard';
 import { LawReferenceBadge } from '@/components/shared/law-reference-badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
+import { EmergencyCallBar } from '@/components/shared/emergency-call-bar';
 import { determineVehicleMove } from '@/lib/rules-engine/vehicle-move';
 import type { SceneData } from './scene-wizard';
 
@@ -102,6 +103,9 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
       nextDisabled={!allAnswered}
     >
       <div className="space-y-6">
+        {/* Emergency call bar — always visible at the top */}
+        <EmergencyCallBar showHighway={data.roadType === 'highway'} />
+
         {/* Quick questions */}
         <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4 space-y-5">

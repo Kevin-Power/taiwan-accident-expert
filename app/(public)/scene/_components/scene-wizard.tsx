@@ -33,6 +33,9 @@ export interface SceneData {
   hasSkidMarks: boolean;
   // Step 5: Info exchange
   locationText?: string;
+  accidentDate?: string;  // ISO datetime (from datetime-local input)
+  policeArrived?: boolean;
+  policeReportNo?: string;
   otherPartyName?: string;
   otherPartyPlate?: string;
   otherPartyPhone?: string;
