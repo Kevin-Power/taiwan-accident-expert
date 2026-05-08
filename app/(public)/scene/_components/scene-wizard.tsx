@@ -15,16 +15,16 @@ export interface SceneData {
   speedLimit?: number;
   weather?: Weather;
   // Step 2: Injury
-  hasDeaths: boolean;
-  hasInjuries: boolean;
+  hasDeaths: boolean | null;
+  hasInjuries: boolean | null;
   hasFire: boolean;
   hasHazmat: boolean;
   suspectedDUI: boolean;
   suspectedHitAndRun: boolean;
   // Step 3: Vehicle move
-  vehicleCanDrive: boolean;
-  bothPartiesAgreeToMove: boolean;
-  hasDispute: boolean;
+  vehicleCanDrive: boolean | null;
+  bothPartiesAgreeToMove: boolean | null;
+  hasDispute: boolean | null;
   // Step 4: Evidence (for later)
   vehicleTypes: VehicleType[];
   hasTrafficSignal: boolean;
@@ -42,9 +42,9 @@ export interface SceneData {
 }
 
 const initialData: SceneData = {
-  hasDeaths: false, hasInjuries: false, hasFire: false, hasHazmat: false,
+  hasDeaths: null, hasInjuries: null, hasFire: false, hasHazmat: false,
   suspectedDUI: false, suspectedHitAndRun: false,
-  vehicleCanDrive: true, bothPartiesAgreeToMove: true, hasDispute: false,
+  vehicleCanDrive: null, bothPartiesAgreeToMove: null, hasDispute: null,
   vehicleTypes: ['car', 'car'],
   hasTrafficSignal: false, hasSurveillance: false, hasDashcam: false, hasSkidMarks: false,
 };

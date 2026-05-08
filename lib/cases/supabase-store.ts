@@ -154,12 +154,19 @@ export async function getCaseSupabase(id: string): Promise<CaseRecord | null> {
 
   try {
     const supabase = createClient();
-    const { data, error } = await supabase
-      .from('cases')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const anonymousId = getAnonymousId();
 
+    let query = supabase.from('cases').select('*').eq('id', id);
+
+    // Only fetch cases that belong to this anonymous user
+    if (anonymousId) {
+      query = query.eq('anonymous_id', anonymousId);
+    } else {
+      // No anon ID = can't fetch
+      return null;
+    }
+
+    const { data, error } = await query.single();
     if (error || !data) return null;
     return fromRow(data);
   } catch {

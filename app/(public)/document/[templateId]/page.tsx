@@ -22,7 +22,8 @@ export default function DocumentPreviewPage({ params }: Props) {
     // Read scene data from sessionStorage
     let raw = sessionStorage.getItem('accident_expert_scene_data');
 
-    // Fallback: if sessionStorage is empty, try loading the most recent case from localStorage
+    // Fallback: if sessionStorage is empty, try loading the most recent case from localStorage.
+    // CaseRecord stores parties/witnesses nested — flatten to the shape the generator expects.
     if (!raw) {
       try {
         const localCases = localStorage.getItem('accident_expert_local_cases');
@@ -30,9 +31,37 @@ export default function DocumentPreviewPage({ params }: Props) {
           const cases = JSON.parse(localCases);
           if (Array.isArray(cases) && cases.length > 0) {
             const latest = cases[0]; // sorted by most recent
+            const otherParty = Array.isArray(latest.parties)
+              ? latest.parties.find((p: { role: string }) => p.role === 'other')
+              : undefined;
+            const witness = Array.isArray(latest.witnesses) ? latest.witnesses[0] : undefined;
             raw = JSON.stringify({
-              ...latest,
               caseId: latest.id,
+              accidentDate: latest.accidentDate,
+              roadType: latest.roadType,
+              speedLimit: latest.speedLimit,
+              weather: latest.weather,
+              locationText: latest.locationText,
+              hasDeaths: latest.severity === 'A1_fatal',
+              hasInjuries: latest.severity === 'A2_injury',
+              hasFire: !!latest.riskFlags?.hasFire,
+              hasHazmat: !!latest.riskFlags?.hasHazmat,
+              suspectedDUI: !!latest.riskFlags?.suspectedDUI,
+              suspectedHitAndRun: !!latest.riskFlags?.suspectedHitAndRun,
+              vehicleCanDrive: latest.canMoveVehicle ?? true,
+              bothPartiesAgreeToMove: true,
+              hasDispute: false,
+              vehicleTypes: latest.vehicleTypes,
+              hasTrafficSignal: latest.hasTrafficSignal,
+              hasSurveillance: latest.hasSurveillance,
+              hasDashcam: latest.hasDashcam,
+              hasSkidMarks: latest.hasSkidMarks,
+              otherPartyName: otherParty?.name,
+              otherPartyPlate: otherParty?.plate,
+              otherPartyPhone: otherParty?.phone,
+              otherPartyInsurance: otherParty?.insurance,
+              witnessName: witness?.name,
+              witnessPhone: witness?.phone,
             });
           }
         }

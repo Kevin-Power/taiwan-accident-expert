@@ -19,19 +19,21 @@ interface StepInjuryProps {
 type SeverityChoice = 'fatal' | 'injury' | 'none';
 
 function getSeverityChoice(data: SceneData): SeverityChoice | null {
+  if (data.hasDeaths === null && data.hasInjuries === null) return null;
   if (data.hasDeaths) return 'fatal';
   if (data.hasInjuries) return 'injury';
-  if (!data.hasDeaths && !data.hasInjuries) return 'none';
-  return null;
+  return 'none';
 }
 
 export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps) {
   const severityChoice = getSeverityChoice(data);
+  const hasAnswered = severityChoice !== null;
 
   const triageResult = useMemo(() => {
+    if (!hasAnswered) return null;
     return triageAccident({
-      hasDeaths: data.hasDeaths,
-      hasInjuries: data.hasInjuries,
+      hasDeaths: data.hasDeaths ?? false,
+      hasInjuries: data.hasInjuries ?? false,
       vehicleCount: 2,
       hasFire: data.hasFire,
       hasHazmat: data.hasHazmat,
@@ -40,7 +42,7 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
       hasMinor: false,
       hasForeignNational: false,
     });
-  }, [data.hasDeaths, data.hasInjuries, data.hasFire, data.hasHazmat, data.suspectedDUI, data.suspectedHitAndRun]);
+  }, [hasAnswered, data.hasDeaths, data.hasInjuries, data.hasFire, data.hasHazmat, data.suspectedDUI, data.suspectedHitAndRun]);
 
   function selectSeverity(choice: SeverityChoice) {
     updateData({
@@ -56,7 +58,9 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
     low: 'border-green-500 bg-green-50 dark:bg-green-950/20',
   };
 
-  const alertColorClass = riskColorMap[triageResult.riskLevel] ?? riskColorMap.medium;
+  const alertColorClass = triageResult
+    ? (riskColorMap[triageResult.riskLevel] ?? riskColorMap.medium)
+    : '';
 
   return (
     <StepWizard
@@ -65,11 +69,13 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
       stepTitle="傷亡確認"
       onNext={onNext}
       onBack={onBack}
+      nextDisabled={!hasAnswered}
     >
       <div className="space-y-6">
         {/* Three big severity buttons */}
         <div className="space-y-3">
           <h2 className="text-2xl font-bold">事故傷亡情況</h2>
+          <p className="text-base text-muted-foreground">請選擇一項（必填）</p>
           <button
             type="button"
             onClick={() => selectSeverity('fatal')}
@@ -150,49 +156,53 @@ export function StepInjury({ data, updateData, onNext, onBack }: StepInjuryProps
           </CardContent>
         </Card>
 
-        {/* Triage result */}
-        <div className={`rounded-xl border-2 p-4 space-y-3 ${alertColorClass}`}>
-          <p className="font-semibold text-base">{triageResult.explanation}</p>
+        {/* Triage result — only shown once user has picked a severity */}
+        {triageResult && (
+          <div className={`rounded-xl border-2 p-4 space-y-3 ${alertColorClass}`}>
+            <p className="font-semibold text-base">{triageResult.explanation}</p>
 
-          {/* Emergency call buttons */}
-          {(data.hasDeaths || data.hasInjuries || data.hasFire || data.hasHazmat) && (
-            <div className="flex gap-2">
-              {(data.hasDeaths || data.hasInjuries || data.hasFire) && (
-                <a href="tel:119" className="flex-1">
-                  <Button variant="destructive" className="w-full">
-                    撥打 119 急救
+            {/* Emergency call buttons */}
+            {((data.hasDeaths ?? false) || (data.hasInjuries ?? false) || data.hasFire || data.hasHazmat) && (
+              <div className="flex gap-2">
+                {((data.hasDeaths ?? false) || (data.hasInjuries ?? false) || data.hasFire) && (
+                  <a href="tel:119" className="flex-1">
+                    <Button variant="destructive" className="w-full">
+                      撥打 119 急救
+                    </Button>
+                  </a>
+                )}
+                <a href="tel:110" className="flex-1">
+                  <Button variant="outline" className="w-full border-red-400 text-red-700 hover:bg-red-50">
+                    撥打 110 報警
                   </Button>
                 </a>
-              )}
-              <a href="tel:110" className="flex-1">
-                <Button variant="outline" className="w-full border-red-400 text-red-700 hover:bg-red-50">
-                  撥打 110 報警
-                </Button>
-              </a>
-            </div>
-          )}
+              </div>
+            )}
 
-          {triageResult.warnings.map((w, i) => (
-            <Alert key={i} variant="destructive">
-              <AlertDescription>{w}</AlertDescription>
-            </Alert>
-          ))}
+            {triageResult.warnings.map((w, i) => (
+              <Alert key={i} variant="destructive">
+                <AlertDescription>{w}</AlertDescription>
+              </Alert>
+            ))}
 
-          {triageResult.escalateReason && (
-            <Alert className="border-purple-500 bg-purple-50 dark:bg-purple-950/20">
-              <AlertDescription className="text-purple-800 dark:text-purple-200">
-                {triageResult.escalateReason}
-              </AlertDescription>
-            </Alert>
-          )}
-        </div>
+            {triageResult.escalateReason && (
+              <Alert className="border-purple-500 bg-purple-50 dark:bg-purple-950/20">
+                <AlertDescription className="text-purple-800 dark:text-purple-200">
+                  {triageResult.escalateReason}
+                </AlertDescription>
+              </Alert>
+            )}
+          </div>
+        )}
 
         {/* Law references */}
-        <div className="flex flex-wrap gap-2">
-          {triageResult.lawReferences.map((ref, i) => (
-            <LawReferenceBadge key={i} reference={ref} />
-          ))}
-        </div>
+        {triageResult && (
+          <div className="flex flex-wrap gap-2">
+            {triageResult.lawReferences.map((ref, i) => (
+              <LawReferenceBadge key={i} reference={ref} />
+            ))}
+          </div>
+        )}
       </div>
     </StepWizard>
   );

@@ -16,7 +16,7 @@ interface StepVehicleMoveProps {
 }
 
 type YesNoButtonsProps = {
-  value: boolean;
+  value: boolean | null;
   onChange: (val: boolean) => void;
   yesLabel?: string;
   noLabel?: string;
@@ -29,7 +29,7 @@ function YesNoButtons({ value, onChange, yesLabel = '是', noLabel = '否' }: Ye
         type="button"
         onClick={() => onChange(true)}
         className={`flex-1 rounded-lg border-2 h-12 text-base font-medium transition-all ${
-          value
+          value === true
             ? 'border-green-500 bg-green-50 text-green-700 dark:bg-green-950/30 dark:text-green-400'
             : 'border-muted text-muted-foreground hover:border-green-300'
         }`}
@@ -40,7 +40,7 @@ function YesNoButtons({ value, onChange, yesLabel = '是', noLabel = '否' }: Ye
         type="button"
         onClick={() => onChange(false)}
         className={`flex-1 rounded-lg border-2 h-12 text-base font-medium transition-all ${
-          !value
+          value === false
             ? 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-400'
             : 'border-muted text-muted-foreground hover:border-red-300'
         }`}
@@ -71,18 +71,26 @@ const decisionConfig: Record<string, { label: string; colorClass: string }> = {
 };
 
 export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicleMoveProps) {
-  const moveResult = useMemo(() => {
-    return determineVehicleMove({
-      hasInjuries: data.hasInjuries,
-      hasDeaths: data.hasDeaths,
-      vehicleCanDrive: data.vehicleCanDrive,
-      bothPartiesAgreeToMove: data.bothPartiesAgreeToMove,
-      roadType: data.roadType ?? 'general',
-      hasDispute: data.hasDispute,
-    });
-  }, [data.hasInjuries, data.hasDeaths, data.vehicleCanDrive, data.bothPartiesAgreeToMove, data.roadType, data.hasDispute]);
+  const allAnswered =
+    data.vehicleCanDrive !== null &&
+    data.bothPartiesAgreeToMove !== null &&
+    data.hasDispute !== null;
 
-  const config = decisionConfig[moveResult.moveDecision] ?? decisionConfig.must_not_move;
+  const moveResult = useMemo(() => {
+    if (!allAnswered) return null;
+    return determineVehicleMove({
+      hasInjuries: data.hasInjuries ?? false,
+      hasDeaths: data.hasDeaths ?? false,
+      vehicleCanDrive: data.vehicleCanDrive ?? false,
+      bothPartiesAgreeToMove: data.bothPartiesAgreeToMove ?? false,
+      roadType: data.roadType ?? 'general',
+      hasDispute: data.hasDispute ?? true,
+    });
+  }, [allAnswered, data.hasInjuries, data.hasDeaths, data.vehicleCanDrive, data.bothPartiesAgreeToMove, data.roadType, data.hasDispute]);
+
+  const config = moveResult
+    ? (decisionConfig[moveResult.moveDecision] ?? decisionConfig.must_not_move)
+    : null;
 
   return (
     <StepWizard
@@ -91,12 +99,14 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
       stepTitle="車輛移置"
       onNext={onNext}
       onBack={onBack}
+      nextDisabled={!allAnswered}
     >
       <div className="space-y-6">
         {/* Quick questions */}
         <Card className="shadow-sm rounded-xl">
           <CardContent className="pt-4 space-y-5">
             <h2 className="text-2xl font-bold">🚗 車輛狀況</h2>
+            <p className="text-base text-muted-foreground">請回答以下所有問題（必填）</p>
 
             <div className="space-y-2">
               <p className="text-base font-medium">車輛可以自行行駛？</p>
@@ -126,50 +136,54 @@ export function StepVehicleMove({ data, updateData, onNext, onBack }: StepVehicl
           </CardContent>
         </Card>
 
-        {/* Decision result */}
-        <div className={`rounded-xl border-2 p-4 space-y-3 ${config.colorClass}`}>
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold">{config.label}</span>
-            <span className="text-base text-muted-foreground">— {moveResult.explanation}</span>
-          </div>
+        {/* Decision result — only shown once all 3 answered */}
+        {moveResult && config && (
+          <>
+            <div className={`rounded-xl border-2 p-4 space-y-3 ${config.colorClass}`}>
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-bold">{config.label}</span>
+                <span className="text-base text-muted-foreground">— {moveResult.explanation}</span>
+              </div>
 
-          {moveResult.warnings.map((w, i) => (
-            <Alert key={i} variant="destructive">
-              <AlertDescription>{w}</AlertDescription>
-            </Alert>
-          ))}
-        </div>
-
-        {/* Step-by-step instructions — prominent, can't-miss style */}
-        {moveResult.nextSteps.length > 0 && (
-          <div>
-            <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-              <span>📋</span>
-              <span>現在要做的事</span>
-              <span className="text-base font-normal text-muted-foreground">（依序執行）</span>
-            </h3>
-            <div className="space-y-2">
-              {moveResult.nextSteps.map((step, i) => (
-                <div
-                  key={i}
-                  className="flex items-start gap-4 p-4 rounded-xl border-2 border-primary/20 bg-primary/5"
-                >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-bold">
-                    {i + 1}
-                  </span>
-                  <span className="text-base font-medium pt-1.5">{step}</span>
-                </div>
+              {moveResult.warnings.map((w, i) => (
+                <Alert key={i} variant="destructive">
+                  <AlertDescription>{w}</AlertDescription>
+                </Alert>
               ))}
             </div>
-          </div>
-        )}
 
-        {/* Law references */}
-        <div className="flex flex-wrap gap-2">
-          {moveResult.lawReferences.map((ref, i) => (
-            <LawReferenceBadge key={i} reference={ref} />
-          ))}
-        </div>
+            {/* Step-by-step instructions — prominent, can't-miss style */}
+            {moveResult.nextSteps.length > 0 && (
+              <div>
+                <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
+                  <span>📋</span>
+                  <span>現在要做的事</span>
+                  <span className="text-base font-normal text-muted-foreground">（依序執行）</span>
+                </h3>
+                <div className="space-y-2">
+                  {moveResult.nextSteps.map((step, i) => (
+                    <div
+                      key={i}
+                      className="flex items-start gap-4 p-4 rounded-xl border-2 border-primary/20 bg-primary/5"
+                    >
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-lg font-bold">
+                        {i + 1}
+                      </span>
+                      <span className="text-base font-medium pt-1.5">{step}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Law references */}
+            <div className="flex flex-wrap gap-2">
+              {moveResult.lawReferences.map((ref, i) => (
+                <LawReferenceBadge key={i} reference={ref} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </StepWizard>
   );

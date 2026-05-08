@@ -26,8 +26,8 @@ interface StepCompleteProps {
 export function StepComplete({ data }: StepCompleteProps) {
   const triageResult = useMemo(() => {
     return triageAccident({
-      hasDeaths: data.hasDeaths,
-      hasInjuries: data.hasInjuries,
+      hasDeaths: data.hasDeaths ?? false,
+      hasInjuries: data.hasInjuries ?? false,
       vehicleCount: data.vehicleTypes.length,
       hasFire: data.hasFire,
       hasHazmat: data.hasHazmat,
@@ -49,12 +49,12 @@ export function StepComplete({ data }: StepCompleteProps) {
   const matchedScenarios = useMemo(() => findMatchingScenarios({
     severity: triageResult.severity,
     roadType: data.roadType,
-    hasInjuries: data.hasInjuries,
-    hasDeaths: data.hasDeaths,
-    vehicleCanDrive: data.vehicleCanDrive,
+    hasInjuries: data.hasInjuries ?? false,
+    hasDeaths: data.hasDeaths ?? false,
+    vehicleCanDrive: data.vehicleCanDrive ?? false,
     suspectedHitAndRun: data.suspectedHitAndRun,
     suspectedDUI: data.suspectedDUI,
-    hasDispute: data.hasDispute,
+    hasDispute: data.hasDispute ?? false,
     vehicleTypes: data.vehicleTypes,
   }), [triageResult.severity, data]);
 
@@ -111,7 +111,7 @@ export function StepComplete({ data }: StepCompleteProps) {
         hasDashcam: data.hasDashcam,
         hasSkidMarks: data.hasSkidMarks,
         triageResult,
-        canMoveVehicle: !data.hasDeaths && data.vehicleCanDrive && data.bothPartiesAgreeToMove && !data.hasDispute,
+        canMoveVehicle: !data.hasDeaths && (data.vehicleCanDrive ?? false) && (data.bothPartiesAgreeToMove ?? false) && !(data.hasDispute ?? false),
         moveVehicleReason: null,
         policeArrived: true,
       };

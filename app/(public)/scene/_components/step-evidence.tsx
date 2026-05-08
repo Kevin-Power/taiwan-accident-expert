@@ -36,19 +36,19 @@ export function StepEvidence({ data, updateData, onNext, onBack }: StepEvidenceP
       hasSkidMarks: data.hasSkidMarks,
       weather: data.weather ?? 'clear',
       isNight: data.weather === 'night',
-      hasInjuries: data.hasInjuries,
+      hasInjuries: data.hasInjuries ?? false,
     });
   }, [data.roadType, data.vehicleTypes, data.hasTrafficSignal, data.hasSurveillance, data.hasDashcam, data.hasSkidMarks, data.weather, data.hasInjuries]);
 
   const matchedScenarios = useMemo(() => findMatchingScenarios({
     severity: data.hasDeaths ? 'A1_fatal' : data.hasInjuries ? 'A2_injury' : 'A3_property_only',
     roadType: data.roadType,
-    hasInjuries: data.hasInjuries,
-    hasDeaths: data.hasDeaths,
-    vehicleCanDrive: data.vehicleCanDrive,
+    hasInjuries: data.hasInjuries ?? false,
+    hasDeaths: data.hasDeaths ?? false,
+    vehicleCanDrive: data.vehicleCanDrive ?? false,
     suspectedHitAndRun: data.suspectedHitAndRun,
     suspectedDUI: data.suspectedDUI,
-    hasDispute: data.hasDispute,
+    hasDispute: data.hasDispute ?? false,
     vehicleTypes: data.vehicleTypes,
   }), [data]);
 

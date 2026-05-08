@@ -41,13 +41,49 @@ export default function GuestCaseDetailPage({ params }: Props) {
       const result = await getCase(id);
       setCaseData(result);
       setLoading(false);
-      // Also store in sessionStorage for document generation
+      // Also store in sessionStorage for document generation.
+      // CaseRecord stores parties/witnesses nested, but the document page
+      // expects flat fields (otherPartyName, witnessName, etc.) — normalize here.
       if (result) {
+        const otherParty = result.parties.find(p => p.role === 'other');
+        const witness = result.witnesses[0];
+
+        const sessionPayload = {
+          // Scene data fields
+          caseId: result.id,
+          accidentDate: result.accidentDate,
+          roadType: result.roadType,
+          speedLimit: result.speedLimit,
+          weather: result.weather,
+          locationText: result.locationText,
+          // Severity / risk flags
+          hasDeaths: result.severity === 'A1_fatal',
+          hasInjuries: result.severity === 'A2_injury',
+          hasFire: !!result.riskFlags?.hasFire,
+          hasHazmat: !!result.riskFlags?.hasHazmat,
+          suspectedDUI: !!result.riskFlags?.suspectedDUI,
+          suspectedHitAndRun: !!result.riskFlags?.suspectedHitAndRun,
+          // Vehicle move
+          vehicleCanDrive: result.canMoveVehicle ?? true,
+          bothPartiesAgreeToMove: true,
+          hasDispute: false,
+          // Evidence flags
+          vehicleTypes: result.vehicleTypes,
+          hasTrafficSignal: result.hasTrafficSignal,
+          hasSurveillance: result.hasSurveillance,
+          hasDashcam: result.hasDashcam,
+          hasSkidMarks: result.hasSkidMarks,
+          // Flattened parties + witnesses (the critical fix)
+          otherPartyName: otherParty?.name,
+          otherPartyPlate: otherParty?.plate,
+          otherPartyPhone: otherParty?.phone,
+          otherPartyInsurance: otherParty?.insurance,
+          witnessName: witness?.name,
+          witnessPhone: witness?.phone,
+        };
+
         try {
-          sessionStorage.setItem('accident_expert_scene_data', JSON.stringify({
-            ...result,
-            caseId: result.id,
-          }));
+          sessionStorage.setItem('accident_expert_scene_data', JSON.stringify(sessionPayload));
         } catch { /* ignore */ }
       }
     }
